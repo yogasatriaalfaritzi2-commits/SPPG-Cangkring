@@ -23,16 +23,18 @@ Versi `0.4.0` melanjutkan codebase tahap pertama sampai ketiga — struktur fold
 
 Aplikasi tidak membutuhkan Composer, Node.js, atau koneksi internet saat dijalankan. Seluruh aset CSS, JavaScript, ikon, logo, Chart.js 4.4.1 (`public/assets/vendor/chartjs/chart.umd.min.js`), dan bundel kalender FullCalendar 6.1.18 (`public/assets/vendor/fullcalendar/index.global.min.js`) tersedia lokal.
 
-Logo berada di `public/assets/images/` dan semuanya memuat nama **SPPG Cangkring**:
+Logo berada di `public/assets/images/`; lambangnya adalah lencana resmi Badan Gizi Nasional, sedangkan tulisannya dibentuk oleh aplikasi:
 
 | Berkas | Isi | Dipakai di |
 | --- | --- | --- |
-| `logo-sppg-lockup-inverted.svg` | Lambang + tulisan `SPPG` / `CANGKRING`, teks terang | Sidebar aplikasi, panel kiri halaman masuk |
-| `logo-sppg-lockup.svg` | Lockup yang sama, teks gelap `#0B2545` / `#177A55` | Kepala halaman galat 4xx/5xx (latar terang) |
-| `logo-sppg.svg` | Lambang saja, 64×64 | Ikon logo pada kartu masuk layar sempit |
-| `favicon.svg` | Lambang saja | Tab peramban |
+| `logo-bgn-emblem.png` | Lambang resmi BGN, 128×128, latar transparan | Sidebar aplikasi, panel kiri halaman masuk, kepala halaman galat 4xx/5xx, dan ikon pada kartu masuk layar sempit |
+| `favicon.png` | Lambang yang sama, 64×64 | Tab peramban |
 
-Kedua lockup berukuran intrinsik 244×72 (`width`/`height` + `viewBox` pada elemen akar), tulisan memakai `<text>` dengan rangkaian font `Segoe UI, system-ui, -apple-system, 'Helvetica Neue', Arial` sehingga mengikuti font aplikasi. Nama tercetak di dalam berkas gambar, jadi mengganti `APP_NAME` tidak mengubah logo; `APP_NAME` dan `institution_name()` tetap mengendalikan `<title>`, meta deskripsi, dan catatan kaki.
+Wordmark `SPPG` / `CANGKRING` tidak tercetak di dalam berkas gambar, melainkan dibangun partial `app/Views/partials/brand.php` (`<img>` + `.brand-word` pada `app.css`). Warna tulisan mengikuti latar: `.brand-inverted` memberi `#FFFFFF` / `var(--gold-300)` di atas navy, tanpa kelas itu `var(--navy-800)` / `var(--green-600)` di atas latar terang. Mengganti lambang cukup dengan menimpa `logo-bgn-emblem.png`; `APP_NAME` dan `institution_name()` tetap mengendalikan `<title>`, meta deskripsi, dan catatan kaki.
+
+Sumber lambang: Wikimedia Commons, *File:Logo Badan Gizi Nasional (2024).png* (`https://upload.wikimedia.org/wikipedia/commons/9/96/Logo_Badan_Gizi_Nasional_(2024).png`, 1122×1112). Berkas itu berstatus domain publik di Indonesia karena diterbitkan dan didistribusikan oleh Pemerintah Republik Indonesia. Turunan 128×128 dan 64×64 dibuat sekali secara lokal dengan PHP GD (contain-fit dengan padding transparan), sehingga aplikasi tetap berjalan tanpa koneksi internet.
+
+Catatan penggunaan: lencana ini milik BGN, bukan milik SPPG Cangkring. Gunakan hanya sebagai penanda unit pada sistem internal; jangan untuk bahan promosi dan jangan menimbulkan kesan afiliasi atau persetujuan resmi bila izin belum diperoleh (BGN pernah memprotes penggunaan logonya pada promosi produk SPPG tanpa izin).
 
 ---
 

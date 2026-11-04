@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Masuk ke Sistem Informasi Manajemen Pembangunan dan Operasional MBG SPPG Cangkring.">
     <title><?= e(($title ?? 'Masuk') . ' · ' . app_name()) ?></title>
-    <link rel="icon" type="image/svg+xml" href="<?= asset('images/favicon.svg') ?>">
+    <link rel="icon" type="image/png" href="<?= asset('images/favicon.png') ?>">
     <link rel="stylesheet" href="<?= asset('vendor/bootstrap/bootstrap.min.css') ?>">
     <link rel="stylesheet" href="<?= asset('vendor/bootstrap-icons/bootstrap-icons.min.css') ?>">
     <link rel="stylesheet" href="<?= asset('css/app.css') ?>">
@@ -17,7 +17,7 @@
 <main class="auth-shell">
     <section class="auth-brand" aria-label="Tentang aplikasi">
         <div class="auth-brand-head">
-            <img src="<?= asset('images/logo-sppg-lockup-inverted.svg') ?>" alt="Logo SPPG Cangkring" width="163" height="48">
+            <?php $brandTone = 'inverted'; $brandEmblem = 44; require BASE_PATH . '/app/Views/partials/brand.php'; ?>
             <span class="auth-brand-sub">Sistem Informasi MBG</span>
         </div>
 

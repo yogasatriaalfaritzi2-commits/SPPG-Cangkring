@@ -10,7 +10,7 @@ $actionLabel = $actionLabel ?? 'Kembali ke halaman masuk';
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex">
     <title><?= e(($title ?? 'Terjadi kesalahan') . ' · ' . app_name()) ?></title>
-    <link rel="icon" type="image/svg+xml" href="<?= asset('images/favicon.svg') ?>">
+    <link rel="icon" type="image/png" href="<?= asset('images/favicon.png') ?>">
     <link rel="stylesheet" href="<?= asset('vendor/bootstrap/bootstrap.min.css') ?>">
     <link rel="stylesheet" href="<?= asset('vendor/bootstrap-icons/bootstrap-icons.min.css') ?>">
     <link rel="stylesheet" href="<?= asset('css/app.css') ?>">
@@ -18,7 +18,7 @@ $actionLabel = $actionLabel ?? 'Kembali ke halaman masuk';
 <body class="error-body">
 <main class="error-shell">
     <a class="error-brand" href="<?= url('/login') ?>">
-        <img src="<?= asset('images/logo-sppg-lockup.svg') ?>" alt="Logo SPPG Cangkring" width="139" height="41">
+        <?php $brandTone = 'light'; $brandEmblem = 36; require BASE_PATH . '/app/Views/partials/brand.php'; ?>
     </a>
 
     <section class="error-card">

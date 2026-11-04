@@ -4,7 +4,7 @@ $sidebarUser = auth_user();
 <aside class="app-sidebar" id="appSidebar" aria-label="Navigasi utama">
     <div class="sidebar-brand">
         <a href="<?= url(home_path()) ?>" class="brand-link">
-            <img src="<?= asset('images/logo-sppg-lockup-inverted.svg') ?>" alt="Logo SPPG Cangkring" width="156" height="46">
+            <?php $brandTone = 'inverted'; $brandEmblem = 40; require BASE_PATH . '/app/Views/partials/brand.php'; ?>
             <span class="brand-sub">Sistem Informasi MBG</span>
         </a>
     </div>

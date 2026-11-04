@@ -10,7 +10,7 @@ $documentTitle = ($title ?? 'Dashboard') . ' · ' . app_name();
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Sistem Informasi Manajemen Pembangunan dan Operasional MBG SPPG Cangkring.">
     <title><?= e($documentTitle) ?></title>
-    <link rel="icon" type="image/svg+xml" href="<?= asset('images/favicon.svg') ?>">
+    <link rel="icon" type="image/png" href="<?= asset('images/favicon.png') ?>">
     <link rel="stylesheet" href="<?= asset('vendor/bootstrap/bootstrap.min.css') ?>">
     <link rel="stylesheet" href="<?= asset('vendor/bootstrap-icons/bootstrap-icons.min.css') ?>">
     <link rel="stylesheet" href="<?= asset('css/app.css') ?>">

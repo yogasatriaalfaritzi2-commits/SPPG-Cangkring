@@ -3,7 +3,7 @@ $old = $old ?? [];
 ?>
 <div class="auth-card">
     <div class="auth-card-head">
-        <img class="auth-logo-mobile d-lg-none" src="<?= asset('images/logo-sppg.svg') ?>" alt="Logo SPPG Cangkring" width="52" height="52">
+        <img class="auth-logo-mobile d-lg-none" src="<?= asset('images/logo-bgn-emblem.png') ?>" alt="Logo SPPG Cangkring" width="52" height="52">
         <p class="eyebrow">Akun pengguna</p>
         <h1 class="auth-title">Masuk ke akun Anda</h1>
         <p class="auth-subtitle">Gunakan akun yang diberikan oleh administrator <?= e(app_name()) ?>.</p>

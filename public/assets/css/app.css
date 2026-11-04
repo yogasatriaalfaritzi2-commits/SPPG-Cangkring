@@ -110,6 +110,46 @@ img {
     padding: 28px 30px 22px;
 }
 
+/* ---------- Lockup merek ---------- */
+
+.brand-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--navy-800);
+}
+
+.brand-mark img {
+    flex: none;
+}
+
+.brand-word {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.08;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.brand-word span:first-child {
+    letter-spacing: 0.14em;
+}
+
+.brand-word span:last-child {
+    color: var(--green-600);
+}
+
+.brand-inverted {
+    color: #fff;
+}
+
+.brand-inverted .brand-word span:last-child {
+    color: var(--gold-300);
+}
+
 /* ---------- Sidebar ---------- */
 
 .sidebar-brand {
@@ -129,10 +169,6 @@ img {
 .brand-link:hover {
     color: #fff;
     text-decoration: none;
-}
-
-.brand-link img {
-    flex: none;
 }
 
 .brand-sub {
@@ -930,10 +966,6 @@ img {
     flex-direction: column;
     align-items: flex-start;
     gap: 7px;
-}
-
-.auth-brand-head img {
-    flex: none;
 }
 
 .auth-brand-sub {
