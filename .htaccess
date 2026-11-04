@@ -1,0 +1,27 @@
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Substitusi relatif di bawah ("public/") dianggap mod_rewrite sebagai path
+    # filesystem selama arah URL-nya tidak dinyatakan. Tanpa RewriteBase, header
+    # Location berisi "D:/PROGRAM/XAMPP/htdocs/SPPG-Cangkring/public/", browser
+    # memintanya sebagai URL, dan Apache membalas 403 "Cannot map ... to file".
+    # Nilai ini mengikuti posisi folder proyek di bawah DocumentRoot htdocs.
+    RewriteBase /SPPG-Cangkring/
+
+    # Tolak akses langsung ke berkas dan folder internal.
+    RewriteRule ^(?:app|bootstrap|config|database|storage|tests)(?:/|$) - [F,L,NC]
+    RewriteRule ^(?:\.env(?:\..*)?|\.git.*)$ - [F,L,NC]
+
+    # Permintaan yang sudah menuju public/ diteruskan apa adanya.
+    RewriteRule ^public(?:/|$) - [L,NC]
+
+    # Arahkan seluruh permintaan lain ke document root aplikasi.
+    RewriteRule ^$ public/ [R=302,L]
+    RewriteRule ^(.*)$ public/$1 [R=302,L]
+</IfModule>
+
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>

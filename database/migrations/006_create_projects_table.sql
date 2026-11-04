@@ -1,0 +1,58 @@
+-- Tahap 3: proyek pembangunan fasilitas SPPG Cangkring.
+-- Modul baru memperpanjang skema tahap 1 dan 2 tanpa mengubah tabel yang sudah ada.
+
+CREATE TABLE IF NOT EXISTS projects (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    project_code VARCHAR(30) NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    description TEXT NULL,
+    location VARCHAR(150) NOT NULL,
+    address TEXT NULL,
+    latitude DECIMAL(10,7) NULL,
+    longitude DECIMAL(10,7) NULL,
+    pic_name VARCHAR(120) NOT NULL,
+    pic_user_id BIGINT UNSIGNED NULL,
+    contractor VARCHAR(150) NULL,
+    start_date DATE NOT NULL,
+    target_date DATE NOT NULL,
+    budget_amount DECIMAL(15,2) NOT NULL DEFAULT 0.00,
+    status ENUM('planning', 'preparation', 'running', 'delayed', 'completed', 'cancelled') NOT NULL DEFAULT 'planning',
+    progress TINYINT UNSIGNED NOT NULL DEFAULT 0,
+    notes TEXT NULL,
+    is_archived TINYINT(1) NOT NULL DEFAULT 0,
+    archived_at DATETIME NULL,
+    archived_by BIGINT UNSIGNED NULL,
+    created_by BIGINT UNSIGNED NULL,
+    updated_by BIGINT UNSIGNED NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_projects_code (project_code),
+    KEY idx_projects_status (status),
+    KEY idx_projects_archived (is_archived, status),
+    KEY idx_projects_start (start_date),
+    KEY idx_projects_target (target_date),
+    KEY idx_projects_pic (pic_user_id),
+    KEY idx_projects_created_by (created_by),
+    CONSTRAINT fk_projects_pic FOREIGN KEY (pic_user_id) REFERENCES users (id) ON DELETE SET NULL,
+    CONSTRAINT fk_projects_archived_by FOREIGN KEY (archived_by) REFERENCES users (id) ON DELETE SET NULL,
+    CONSTRAINT fk_projects_created_by FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE SET NULL,
+    CONSTRAINT fk_projects_updated_by FOREIGN KEY (updated_by) REFERENCES users (id) ON DELETE SET NULL,
+    CONSTRAINT chk_projects_progress CHECK (progress <= 100),
+    CONSTRAINT chk_projects_dates CHECK (target_date >= start_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS project_status_logs (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    project_id BIGINT UNSIGNED NOT NULL,
+    from_status VARCHAR(20) NULL,
+    to_status VARCHAR(20) NOT NULL,
+    reason VARCHAR(255) NULL,
+    changed_by BIGINT UNSIGNED NULL,
+    changed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY idx_status_logs_project (project_id, changed_at),
+    KEY idx_status_logs_user (changed_by),
+    CONSTRAINT fk_status_logs_project FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE,
+    CONSTRAINT fk_status_logs_user FOREIGN KEY (changed_by) REFERENCES users (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
