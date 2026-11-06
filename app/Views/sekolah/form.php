@@ -101,7 +101,7 @@ $isEdit = ($mode === 'edit');
                         <?php foreach ($statuses as $st): ?>
                             <?php $currentStatus = $form['school_status'] ?? $form['service_status'] ?? 'aktif'; ?>
                             <option value="<?= e($st) ?>" <?= $currentStatus === $st ? 'selected' : '' ?>>
-                                <?= e(status_label($st)) ?>
+                                <?= e(school_status_label($st)) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
