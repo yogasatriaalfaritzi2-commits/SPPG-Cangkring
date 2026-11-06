@@ -13,8 +13,7 @@ $chartCount = count($charts);
         <p class="eyebrow">Ringkasan</p>
         <h1 class="page-title">Selamat datang, <?= e($user['full_name']) ?></h1>
         <p class="page-subtitle">
-            <?= e(tanggal_id(date('Y-m-d'))) ?> · Seluruh angka diambil dari database
-            <?= e(institution_name()) ?>, bukan data contoh.
+            <?= e(tanggal_id(date('Y-m-d'))) ?> · Data operasional dan progres terintegrasi secara real-time dari <?= e(institution_name()) ?>.
         </p>
     </div>
     <?php if ($canViewProjects): ?>
