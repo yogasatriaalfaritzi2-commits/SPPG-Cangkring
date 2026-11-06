@@ -18,6 +18,9 @@ $schId = (int)$schedule['id'];
         <a class="btn btn-outline-primary" href="<?= url('/jadwal-menu/' . $schId . '/surat-jalan') ?>" target="_blank">
             <i class="bi bi-printer me-1"></i>Cetak Surat Jalan
         </a>
+        <a class="btn btn-outline-success" href="<?= url('/jadwal-menu/' . $schId . '/label-kemasan') ?>" target="_blank">
+            <i class="bi bi-tags me-1"></i>Cetak Label Kemasan
+        </a>
         <?php if ($editable && $canManage): ?>
             <a class="btn btn-outline-secondary" href="<?= url('/jadwal-menu/' . $schId . '/ubah') ?>">
                 <i class="bi bi-pencil me-1"></i>Sunting

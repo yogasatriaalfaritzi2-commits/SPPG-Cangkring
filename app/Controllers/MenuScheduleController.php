@@ -168,6 +168,19 @@ final class MenuScheduleController extends Controller
         ]);
     }
 
+    /** Mencetak label stiker kemasan box/ompreng distribusi makanan per sekolah. */
+    public function printPackagingLabels(Request $request, string $id): void
+    {
+        $schedule = $this->findSchedule($id);
+        $scheduleId = (int) $schedule['id'];
+
+        $this->view('jadwal-menu/packaging_labels', [
+            'title' => 'Label Kemasan - ' . $schedule['schedule_code'],
+            'schedule' => $schedule,
+            'allocations' => MenuSchedule::allocations($scheduleId),
+        ]);
+    }
+
     public function edit(Request $request, string $id): void
     {
         $schedule = $this->findSchedule($id);

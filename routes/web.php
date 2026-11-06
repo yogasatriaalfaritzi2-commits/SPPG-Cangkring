@@ -230,6 +230,7 @@ return static function (Router $router): void {
     $router->post('/jadwal-menu/{id}/selesai', [MenuScheduleController::class, 'complete'], $permission('menu_schedules.manage'));
     $router->post('/jadwal-menu/{id}/hapus', [MenuScheduleController::class, 'destroy'], $permission('menu_schedules.manage'));
     $router->get('/jadwal-menu/{id}/surat-jalan', [MenuScheduleController::class, 'printDeliveryNote'], $permission('menu_schedules.view'));
+    $router->get('/jadwal-menu/{id}/label-kemasan', [MenuScheduleController::class, 'printPackagingLabels'], $permission('menu_schedules.view'));
     $router->get('/jadwal-menu/{id}', [MenuScheduleController::class, 'show'], $permission('menu_schedules.view'));
 
     $router->get('/analisis-gizi', [NutritionController::class, 'index'], $permission('nutrition.view'));
