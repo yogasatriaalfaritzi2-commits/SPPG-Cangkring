@@ -9,6 +9,7 @@ use App\Core\Controller;
 use App\Core\Database;
 use App\Core\Request;
 use App\Core\Session;
+use App\Core\SystemHealth;
 use App\Models\ActivityLog;
 use App\Models\BudgetSummary;
 use App\Models\Setting;
@@ -46,6 +47,7 @@ final class SettingsController extends Controller
             'values' => $values,
             'timezones' => self::TIMEZONES,
             'lastUpdate' => Setting::lastUpdate(),
+            'systemHealth' => SystemHealth::check(),
         ]);
     }
 

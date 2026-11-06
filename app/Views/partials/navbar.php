@@ -14,6 +14,12 @@ $navbarUser = auth_user();
     <?php if ($navbarUser !== null): ?>
         <?php $unreadCount = \App\Models\Notification::unreadCount((int)$navbarUser['id']); ?>
         <div class="navbar-actions d-flex align-items-center gap-2">
+            <!-- Indikator Status Sistem Real-time -->
+            <a href="<?= url('/pengaturan') ?>" class="badge rounded-pill bg-success-subtle text-success border border-success-subtle d-none d-md-inline-flex align-items-center gap-1 text-decoration-none py-1 px-2" title="Sistem & Basis Data Online (Prima)">
+                <span class="spinner-grow spinner-grow-sm text-success" style="width: 0.45rem; height: 0.45rem;" role="status"></span>
+                <span style="font-size: 0.75rem;">Sistem Online</span>
+            </a>
+
             <a href="<?= url('/notifikasi') ?>" class="icon-btn position-relative" title="Notifikasi Sistem" aria-label="Notifikasi Sistem">
                 <i class="bi bi-bell fs-5" aria-hidden="true"></i>
                 <?php if ($unreadCount > 0): ?>
