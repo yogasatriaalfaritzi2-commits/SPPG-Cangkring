@@ -14,6 +14,13 @@ $navbarUser = auth_user();
     <?php if ($navbarUser !== null): ?>
         <?php $unreadCount = \App\Models\Notification::unreadCount((int)$navbarUser['id']); ?>
         <div class="navbar-actions d-flex align-items-center gap-2">
+            <!-- Tombol Pintasan Command Palette (Ctrl+K) -->
+            <button class="btn btn-sm btn-outline-secondary d-none d-sm-inline-flex align-items-center gap-2 rounded-pill px-2 py-1 text-muted" type="button" data-command-palette-trigger title="Pencarian Cepat (Ctrl+K)">
+                <i class="bi bi-search" style="font-size: 0.8rem;"></i>
+                <span class="d-none d-lg-inline small">Cari fitur / menu...</span>
+                <kbd class="bg-light text-muted border px-1 small rounded">Ctrl+K</kbd>
+            </button>
+
             <!-- Indikator Status Sistem Real-time -->
             <a href="<?= url('/pengaturan') ?>" class="badge rounded-pill bg-success-subtle text-success border border-success-subtle d-none d-md-inline-flex align-items-center gap-1 text-decoration-none py-1 px-2" title="Sistem & Basis Data Online (Prima)">
                 <span class="spinner-grow spinner-grow-sm text-success" style="width: 0.45rem; height: 0.45rem;" role="status"></span>
