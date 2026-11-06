@@ -96,10 +96,11 @@ $isEdit = ($mode === 'edit');
             <section class="app-card p-4 mb-4">
                 <h2 class="h6 fw-bold mb-3 border-bottom pb-2">Status & Kerjasama</h2>
                 <div class="mb-3">
-                    <label class="form-label" for="service_status">Status Layanan *</label>
-                    <select class="form-select" id="service_status" name="service_status" required>
+                    <label class="form-label" for="school_status">Status Layanan / Sekolah *</label>
+                    <select class="form-select" id="school_status" name="school_status" required>
                         <?php foreach ($statuses as $st): ?>
-                            <option value="<?= e($st) ?>" <?= ($form['service_status'] ?? '') === $st ? 'selected' : '' ?>>
+                            <?php $currentStatus = $form['school_status'] ?? $form['service_status'] ?? 'aktif'; ?>
+                            <option value="<?= e($st) ?>" <?= $currentStatus === $st ? 'selected' : '' ?>>
                                 <?= e(status_label($st)) ?>
                             </option>
                         <?php endforeach; ?>
@@ -109,8 +110,9 @@ $isEdit = ($mode === 'edit');
                     <label class="form-label" for="partnership_status">Status Kerjasama</label>
                     <select class="form-select" id="partnership_status" name="partnership_status">
                         <?php foreach ($partnerships as $ps): ?>
-                            <option value="<?= e($ps) ?>" <?= ($form['partnership_status'] ?? '') === $ps ? 'selected' : '' ?>>
-                                <?= e(ucfirst($ps)) ?>
+                            <?php $currentPartnership = $form['partnership_status'] ?? 'belum_ada'; ?>
+                            <option value="<?= e($ps) ?>" <?= $currentPartnership === $ps ? 'selected' : '' ?>>
+                                <?= e(partnership_label($ps)) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
