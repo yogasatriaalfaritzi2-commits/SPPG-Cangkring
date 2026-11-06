@@ -253,6 +253,7 @@ return static function (Router $router): void {
 
     $router->get('/pengaturan', [SettingsController::class, 'index'], $permission('settings.manage'));
     $router->post('/pengaturan', [SettingsController::class, 'update'], $permission('settings.manage'));
+    $router->post('/pengaturan/mbg', [SettingsController::class, 'updateMbg'], $permission('settings.manage'));
     $router->post('/pengaturan/keuangan', [SettingsController::class, 'updateFinance'], $permission('settings.manage'));
 
     $router->get('/pengguna', [UserController::class, 'index'], $permission('users.view'));

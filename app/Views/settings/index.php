@@ -63,56 +63,56 @@
         <section class="app-card mt-3">
             <header class="card-head">
                 <div>
-                    <h2 class="card-title">Ambang keuangan dan jadwal</h2>
-                    <p class="card-subtitle">Nilai ini dibaca ulang setiap permintaan, jadi perubahan berlaku tanpa mengubah kode.</p>
+                    <h2 class="card-title">Pengaturan Operasional MBG & Kuota Porsi</h2>
+                    <p class="card-subtitle">Konfigurasi kapasitas layanan harian, mode pencatatan penerima manfaat, dan toleransi bahan baku SPPG Cangkring.</p>
                 </div>
             </header>
 
-            <form class="app-form" method="post" action="<?= url('/pengaturan/keuangan') ?>">
+            <form class="app-form" method="post" action="<?= url('/pengaturan/mbg') ?>">
                 <?= csrf_field() ?>
 
                 <div class="row g-3">
                     <div class="col-12 col-md-6">
                         <div class="form-group mb-0">
-                            <label class="form-label" for="budget_warning_percent">Ambang peringatan penyerapan (%) *</label>
-                            <input class="form-control" type="number" id="budget_warning_percent"
-                                   name="budget_warning_percent" value="<?= e($values['budget_warning_percent']) ?>"
-                                   min="1" max="100" step="1" required>
+                            <label class="form-label" for="mbg_daily_portion_target">Target Kuota Porsi Harian (porsi / hari) *</label>
+                            <input class="form-control" type="number" id="mbg_daily_portion_target"
+                                   name="mbg_daily_portion_target" value="<?= e($values['mbg_daily_portion_target'] ?? '3000') ?>"
+                                   min="1" max="1000000" step="10" required>
                             <div class="form-text">
-                                Penyerapan sebesar atau di atas angka ini ditandai "mendekati batas"; di atas 100% ditandai "terlampaui".
+                                Kapasitas standar produksi makan bergizi gratis harian dapur SPPG Cangkring.
                             </div>
                         </div>
                     </div>
                     <div class="col-12 col-md-6">
                         <div class="form-group mb-0">
-                            <label class="form-label" for="schedule_due_days">Pengingat tenggat kegiatan (hari *)</label>
-                            <input class="form-control" type="number" id="schedule_due_days"
-                                   name="schedule_due_days" value="<?= e($values['schedule_due_days']) ?>"
-                                   min="1" max="90" step="1" required>
+                            <label class="form-label" for="mbg_ingredient_tolerance_percent">Toleransi Selisih Belanja Bahan (%) *</label>
+                            <input class="form-control" type="number" id="mbg_ingredient_tolerance_percent"
+                                   name="mbg_ingredient_tolerance_percent" value="<?= e($values['mbg_ingredient_tolerance_percent'] ?? '5') ?>"
+                                   min="0" max="50" step="1" required>
                             <div class="form-text">
-                                Kegiatan yang tanggal selesai-nya dalam rentang ini memicu notifikasi "menjelang tenggat".
+                                Batas persentase cadangan susut / kelebihan kuantitas saat rekap kebutuhan bahan belanja.
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="finance_segregation_of_duties">Pemisahan tugas persetujuan</label>
-                    <select class="form-select" id="finance_segregation_of_duties" name="finance_segregation_of_duties">
-                        <option value="1" <?= $values['finance_segregation_of_duties'] === '1' ? 'selected' : '' ?>>
-                            Aktifkan — pembuat tidak boleh menyetujui RAB atau transaksi buatannya sendiri
+                <div class="form-group mt-3">
+                    <label class="form-label" for="mbg_beneficiary_mode">Mode Pencatatan Penerima Manfaat *</label>
+                    <select class="form-select" id="mbg_beneficiary_mode" name="mbg_beneficiary_mode" required>
+                        <option value="rekap" <?= ($values['mbg_beneficiary_mode'] ?? 'rekap') === 'rekap' ? 'selected' : '' ?>>
+                            Mode Rekap Agregat (Baku) — Pencatatan jumlah total per sekolah, kategori, dan kelompok kelas
                         </option>
-                        <option value="0" <?= $values['finance_segregation_of_duties'] === '0' ? 'selected' : '' ?>>
-                            Nonaktifkan — satu pengguna boleh mengajukan dan menyetujui
+                        <option value="individu" <?= ($values['mbg_beneficiary_mode'] ?? 'rekap') === 'individu' ? 'selected' : '' ?>>
+                            Mode Rinci Individu — Mengaktifkan pencatatan per nama siswa/individu di halaman terpisah
                         </option>
                     </select>
                     <div class="form-text">
-                        Aturan ditegakkan di server pada setiap aksi persetujuan, bukan hanya disembunyikan pada tombol.
+                        Menyesuaikan tampilan dan mekanisme rekapitulasi data siswa penerima manfaat di seluruh sistem.
                     </div>
                 </div>
 
                 <div class="form-actions">
-                    <button class="btn btn-primary" type="submit">Simpan ambang dan kebijakan</button>
+                    <button class="btn btn-primary" type="submit">Simpan Pengaturan Operasional MBG</button>
                 </div>
             </form>
         </section>

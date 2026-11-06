@@ -33,6 +33,12 @@ final class SettingsController extends Controller
             'institution_name' => (string) ($old['institution_name'] ?? $stored['institution_name'] ?? institution_name()),
             'timezone' => (string) ($old['timezone'] ?? $stored['timezone'] ?? 'Asia/Jakarta'),
             'support_email' => (string) ($old['support_email'] ?? $stored['support_email'] ?? ''),
+            'mbg_daily_portion_target' => (string) ($old['mbg_daily_portion_target']
+                ?? $stored['mbg_daily_portion_target'] ?? '3000'),
+            'mbg_beneficiary_mode' => (string) ($old['mbg_beneficiary_mode']
+                ?? $stored['mbg_beneficiary_mode'] ?? 'rekap'),
+            'mbg_ingredient_tolerance_percent' => (string) ($old['mbg_ingredient_tolerance_percent']
+                ?? $stored['mbg_ingredient_tolerance_percent'] ?? '5'),
             'budget_warning_percent' => (string) ($old['budget_warning_percent']
                 ?? $stored['budget_warning_percent'] ?? (string) BudgetSummary::warningPercent()),
             'schedule_due_days' => (string) ($old['schedule_due_days']
@@ -49,6 +55,65 @@ final class SettingsController extends Controller
             'lastUpdate' => Setting::lastUpdate(),
             'systemHealth' => SystemHealth::check(),
         ]);
+    }
+
+    /**
+     * Menyimpan pengaturan operasional MBG: kuota porsi harian, mode pencatatan penerima manfaat,
+     * dan batas toleransi belanja bahan baku.
+     */
+    public function updateMbg(Request $request): void
+    {
+        $targetPortion = $request->string('mbg_daily_portion_target');
+        $mode = $request->string('mbg_beneficiary_mode');
+        $tolerance = $request->string('mbg_ingredient_tolerance_percent');
+
+        $old = [
+            'mbg_daily_portion_target' => $targetPortion,
+            'mbg_beneficiary_mode' => $mode,
+            'mbg_ingredient_tolerance_percent' => $tolerance,
+        ];
+
+        $errors = [];
+
+        if (preg_match('/^\d{1,7}$/', $targetPortion) !== 1 || (int) $targetPortion < 1 || (int) $targetPortion > 1000000) {
+            $errors[] = 'Target kuota porsi harian harus angka bulat 1 sampai 1.000.000 porsi.';
+        }
+
+        if (!in_array($mode, ['rekap', 'individu'], true)) {
+            $errors[] = 'Mode pencatatan penerima manfaat tidak valid.';
+        }
+
+        if (preg_match('/^\d{1,2}$/', $tolerance) !== 1 || (int) $tolerance < 0 || (int) $tolerance > 50) {
+            $errors[] = 'Toleransi selisih belanja bahan harus berupa angka 0 sampai 50%.';
+        }
+
+        if ($errors !== []) {
+            Session::flash('danger', $errors[0]);
+            Session::putOld($old);
+            $this->redirect('/pengaturan');
+        }
+
+        $user = Auth::user();
+        $userId = $user !== null ? (int) $user['id'] : null;
+
+        Database::transaction(static function () use ($targetPortion, $mode, $tolerance, $userId): void {
+            Setting::put('mbg_daily_portion_target', (string) (int) $targetPortion, $userId);
+            Setting::put('mbg_beneficiary_mode', $mode, $userId);
+            Setting::put('mbg_ingredient_tolerance_percent', (string) (int) $tolerance, $userId);
+        });
+
+        ActivityLog::record(
+            $userId,
+            'settings.mbg.update',
+            'settings',
+            'Memperbarui pengaturan operasional MBG: target ' . number_format((int) $targetPortion, 0, ',', '.') . ' porsi/hari, mode ' . $mode . ', toleransi bahan ' . $tolerance . '%.',
+            $request->ip(),
+            $request->userAgent()
+        );
+
+        Session::clearOld();
+        Session::flash('success', 'Pengaturan operasional MBG berhasil disimpan.');
+        $this->redirect('/pengaturan');
     }
 
     /**
