@@ -12,7 +12,18 @@ $navbarUser = auth_user();
     </div>
 
     <?php if ($navbarUser !== null): ?>
-        <div class="navbar-actions">
+        <?php $unreadCount = \App\Models\Notification::unreadCount((int)$navbarUser['id']); ?>
+        <div class="navbar-actions d-flex align-items-center gap-2">
+            <a href="<?= url('/notifikasi') ?>" class="icon-btn position-relative" title="Notifikasi Sistem" aria-label="Notifikasi Sistem">
+                <i class="bi bi-bell fs-5" aria-hidden="true"></i>
+                <?php if ($unreadCount > 0): ?>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
+                        <?= $unreadCount > 99 ? '99+' : $unreadCount ?>
+                        <span class="visually-hidden">notifikasi belum dibaca</span>
+                    </span>
+                <?php endif; ?>
+            </a>
+
             <div class="dropdown">
                 <button class="user-menu" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Buka menu akun">
                     <span class="avatar"><?= e(initials((string) $navbarUser['full_name'])) ?></span>
