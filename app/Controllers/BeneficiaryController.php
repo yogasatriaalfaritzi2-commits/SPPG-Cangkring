@@ -53,11 +53,23 @@ final class BeneficiaryController extends Controller
         $old = $this->pullOld();
         $schoolId = (int) ($old['school_id'] ?? $request->integer('sekolah'));
 
+        $schoolName = '';
+        if ($schoolId > 0) {
+            $sch = School::find($schoolId);
+            if ($sch !== null) {
+                $schoolName = (string) $sch['school_name'];
+            }
+        }
+        if ($schoolName === '' && !empty($old['school_name'])) {
+            $schoolName = (string) $old['school_name'];
+        }
+
         $this->view('penerima-manfaat/form', [
             'title' => 'Catat Jumlah Penerima',
             'pageTitle' => 'Catat Jumlah Penerima Manfaat',
             'form' => [
                 'school_id' => $schoolId > 0 ? (string) $schoolId : '',
+                'school_name' => $schoolName,
                 'category_id' => (string) ($old['category_id'] ?? ''),
                 'class_group' => (string) ($old['class_group'] ?? ''),
                 'beneficiary_count' => (string) ($old['beneficiary_count'] ?? ''),
@@ -540,6 +552,7 @@ final class BeneficiaryController extends Controller
     {
         return [
             'school_id' => (string) $request->integer('school_id'),
+            'school_name' => trim($request->string('school_name')),
             'category_id' => (string) $request->integer('category_id'),
             'class_group' => trim($request->string('class_group')),
             'beneficiary_count' => trim($request->string('beneficiary_count')),
@@ -558,6 +571,28 @@ final class BeneficiaryController extends Controller
         $errors = [];
 
         $schoolId = (int) $input['school_id'];
+        $manualSchoolName = trim($input['school_name'] ?? '');
+
+        // Jika user mengetik manual nama sekolah dan belum memilih dari dropdown
+        if ($schoolId <= 0 && $manualSchoolName !== '') {
+            $existing = School::findByName($manualSchoolName);
+            if ($existing !== null) {
+                $schoolId = (int) $existing['id'];
+            } else {
+                // Buat sekolah baru secara otomatis dengan nama yang diketik manual
+                $schoolCode = School::nextCode();
+                $schoolId = School::create([
+                    'school_code' => $schoolCode,
+                    'school_name' => $manualSchoolName,
+                    'level_id' => 2, // Default jenjang SD/MI
+                    'school_status' => School::STATUS_ACTIVE,
+                    'partnership_status' => School::PARTNERSHIP_NONE,
+                    'created_by' => $exceptId !== null ? null : (auth_user()['id'] ?? null),
+                    'updated_by' => auth_user()['id'] ?? null,
+                ]);
+            }
+        }
+
         $categoryId = (int) $input['category_id'];
         $classGroup = mb_substr($input['class_group'], 0, 60);
         $date = $input['effective_date'];
@@ -565,7 +600,7 @@ final class BeneficiaryController extends Controller
 
         $school = $schoolId > 0 ? School::findWithNames($schoolId) : null;
         if ($school === null) {
-            $errors[] = 'Sekolah penerima manfaat wajib dipilih.';
+            $errors[] = 'Sekolah penerima manfaat wajib diisi atau dipilih.';
         } elseif ((string) $school['school_status'] === School::STATUS_ARCHIVED) {
             $errors[] = 'Sekolah "' . $school['school_name'] . '" sudah diarsipkan, jadi jumlahnya tidak dapat dicatat.';
         }

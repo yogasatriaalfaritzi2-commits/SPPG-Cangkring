@@ -19,17 +19,41 @@ $isEdit = isset($row);
                 <?= csrf_field() ?>
                 
                 <div class="mb-3">
-                    <label class="form-label" for="school_id">Sekolah Mitra *</label>
-                    <select class="form-select" id="school_id" name="school_id" required <?= $isEdit ? 'disabled' : '' ?>>
-                        <option value="">Pilih Sekolah</option>
-                        <?php foreach ($schools as $sch): ?>
-                            <option value="<?= e($sch['id']) ?>" <?= (string)($form['school_id'] ?? '') === (string)$sch['id'] ? 'selected' : '' ?>>
-                                <?= e($sch['school_name']) ?> (<?= e($sch['school_code']) ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+                    <label class="form-label" for="school_name_input">Sekolah Mitra *</label>
                     <?php if ($isEdit): ?>
-                        <input type="hidden" name="school_id" value="<?= e($form['school_id'] ?? $row['school_id'] ?? '') ?>">
+                        <input class="form-control" type="text" id="school_name_input" value="<?= e($row['school_name'] ?? '') ?>" disabled>
+                        <input type="hidden" name="school_id" value="<?= e($row['school_id'] ?? '') ?>">
+                    <?php else: ?>
+                        <div class="input-group">
+                            <input class="form-control" list="schoolOptions" id="school_name_input" name="school_name" 
+                                   value="<?= e($form['school_name'] ?? '') ?>" 
+                                   placeholder="Ketik langsung nama sekolah..." autocomplete="off" required>
+                            <datalist id="schoolOptions">
+                                <?php foreach ($schools as $sch): ?>
+                                    <option value="<?= e($sch['school_name']) ?>" data-id="<?= e($sch['id']) ?>">
+                                        <?= e($sch['school_code']) ?> · <?= e($sch['level_name'] ?? '') ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </datalist>
+                        </div>
+                        <input type="hidden" id="school_id" name="school_id" value="<?= e($form['school_id'] ?? '') ?>">
+                        <div class="form-text small text-muted">
+                            Ketik nama sekolah secara bebas atau pilih dari saran yang muncul.
+                        </div>
+                        <script>
+                            document.getElementById('school_name_input')?.addEventListener('input', function() {
+                                var val = this.value.trim().toLowerCase();
+                                var opts = document.querySelectorAll('#schoolOptions option');
+                                var hidden = document.getElementById('school_id');
+                                var matchedId = '';
+                                opts.forEach(function(opt) {
+                                    if (opt.value.trim().toLowerCase() === val) {
+                                        matchedId = opt.getAttribute('data-id') || '';
+                                    }
+                                });
+                                if (hidden) hidden.value = matchedId;
+                            });
+                        </script>
                     <?php endif; ?>
                 </div>
 

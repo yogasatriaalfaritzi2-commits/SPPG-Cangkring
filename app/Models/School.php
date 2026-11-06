@@ -90,6 +90,14 @@ final class School extends Model
         return self::fetchOne('SELECT * FROM schools WHERE school_code = :code LIMIT 1', ['code' => $code]);
     }
 
+    /** Baris sekolah berdasarkan nama sekolah. */
+    public static function findByName(string $name): ?array
+    {
+        return self::fetchOne('SELECT * FROM schools WHERE LOWER(TRIM(school_name)) = LOWER(TRIM(:name)) LIMIT 1', [
+            'name' => $name,
+        ]);
+    }
+
     public static function codeExists(string $code, ?int $exceptId = null): bool
     {
         $sql = 'SELECT COUNT(*) AS total FROM schools WHERE school_code = :code';
