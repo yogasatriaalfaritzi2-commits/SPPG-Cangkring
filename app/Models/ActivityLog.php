@@ -68,8 +68,15 @@ final class ActivityLog extends Model
     /**
      * @return array{rows: array<int, array<string, mixed>>, total: int, page: int, pages: int, per_page: int}
      */
-    public static function paginate(string $search, string $module, int $page, int $perPage = 15): array
-    {
+    public static function paginate(
+        string $search,
+        string $module,
+        int $page,
+        int $perPage = 15,
+        string $startDate = '',
+        string $endDate = '',
+        string $cluster = ''
+    ): array {
         $conditions = [];
         $params = [];
 
@@ -83,6 +90,24 @@ final class ActivityLog extends Model
         if ($module !== '') {
             $conditions[] = 'a.module = :module';
             $params['module'] = $module;
+        }
+
+        if ($cluster === 'mbg') {
+            $conditions[] = "a.module IN ('mbg', 'schools', 'beneficiaries', 'menus', 'nutrition')";
+        } elseif ($cluster === 'keuangan') {
+            $conditions[] = "a.module IN ('budgets', 'transactions', 'revisions')";
+        } elseif ($cluster === 'proyek') {
+            $conditions[] = "a.module IN ('projects', 'schedules', 'progress', 'documents', 'team')";
+        }
+
+        if ($startDate !== '') {
+            $conditions[] = 'a.created_at >= :start_date';
+            $params['start_date'] = $startDate . ' 00:00:00';
+        }
+
+        if ($endDate !== '') {
+            $conditions[] = 'a.created_at < DATE_ADD(:end_date, INTERVAL 1 DAY)';
+            $params['end_date'] = $endDate . ' 00:00:00';
         }
 
         $where = $conditions === [] ? '' : ' WHERE ' . implode(' AND ', $conditions);
@@ -112,6 +137,46 @@ final class ActivityLog extends Model
             'pages' => $pages,
             'per_page' => $perPage,
         ];
+    }
+
+    /**
+     * Ringkasan statistik aktivitas berdasarkan kluster modul
+     * @return array{mbg: int, keuangan: int, proyek: int, sistem: int, today: int, total: int}
+     */
+    public static function clusterSummary(): array
+    {
+        $rows = self::fetchAll('
+            SELECT 
+                CASE 
+                    WHEN module IN (\'mbg\', \'schools\', \'beneficiaries\', \'menus\', \'nutrition\') THEN \'mbg\'
+                    WHEN module IN (\'budgets\', \'transactions\', \'revisions\') THEN \'keuangan\'
+                    WHEN module IN (\'projects\', \'schedules\', \'progress\', \'documents\', \'team\') THEN \'proyek\'
+                    ELSE \'sistem\'
+                END AS kluster,
+                COUNT(*) AS total,
+                SUM(CASE WHEN created_at >= CURDATE() THEN 1 ELSE 0 END) AS today
+            FROM user_activity_logs
+            GROUP BY kluster
+        ');
+
+        $summary = [
+            'mbg' => 0,
+            'keuangan' => 0,
+            'proyek' => 0,
+            'sistem' => 0,
+            'today' => 0,
+            'total' => 0,
+        ];
+
+        foreach ($rows as $r) {
+            $k = (string) $r['kluster'];
+            $tot = (int) $r['total'];
+            $summary[$k] = $tot;
+            $summary['total'] += $tot;
+            $summary['today'] += (int) $r['today'];
+        }
+
+        return $summary;
     }
 
     /**
