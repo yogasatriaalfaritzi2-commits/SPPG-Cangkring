@@ -13,6 +13,7 @@ use Throwable;
 final class FileUpload
 {
     public const SUBDIR = 'projects';
+    public const MENU_SUBDIR = 'menus';
 
     /** @var array<string, array<int, string>> Ekstensi yang diizinkan beserta MIME hasil deteksi */
     private const ALLOWED = [
@@ -27,7 +28,7 @@ final class FileUpload
      * @param array{name: string, type: string, tmp_name: string, error: int, size: int} $file
      * @return array{ok: bool, error: string, stored: string, mime: string, size: int, original: string}
      */
-    public static function store(array $file): array
+    public static function store(array $file, string $subdir = self::SUBDIR): array
     {
         $result = [
             'ok' => false,
@@ -86,7 +87,7 @@ final class FileUpload
             return $result;
         }
 
-        $directory = self::directory();
+        $directory = self::directory($subdir);
         if ($directory === null) {
             $result['error'] = 'Folder penyimpanan berkas belum tersedia.';
             return $result;
@@ -111,13 +112,13 @@ final class FileUpload
      * Nama harus sesuai pola acak yang dibuat kelas ini dan benar-benar berada
      * di dalam folder penyimpanan.
      */
-    public static function path(string $stored): ?string
+    public static function path(string $stored, string $subdir = self::SUBDIR): ?string
     {
         if (preg_match('/^[a-f0-9]{40}\.(jpg|jpeg|png|webp|pdf)$/', $stored) !== 1) {
             return null;
         }
 
-        $directory = self::directory();
+        $directory = self::directory($subdir);
         if ($directory === null) {
             return null;
         }
@@ -135,9 +136,9 @@ final class FileUpload
             : null;
     }
 
-    public static function remove(string $stored): bool
+    public static function remove(string $stored, string $subdir = self::SUBDIR): bool
     {
-        $path = self::path($stored);
+        $path = self::path($stored, $subdir);
 
         return $path === null || @unlink($path);
     }
@@ -146,9 +147,14 @@ final class FileUpload
      * Mengirim berkas unggahan ke peramban. Pemanggil wajib memeriksa izin
      * penggunanya lebih dahulu, karena berkas disimpan di luar folder public.
      */
-    public static function respond(string $stored, string $mime, string $original, bool $inline): never
-    {
-        $realPath = self::path($stored);
+    public static function respond(
+        string $stored,
+        string $mime,
+        string $original,
+        bool $inline,
+        string $subdir = self::SUBDIR
+    ): never {
+        $realPath = self::path($stored, $subdir);
         if ($realPath === null) {
             throw new HttpException(404, 'Berkas tidak ditemukan pada penyimpanan server.');
         }
@@ -193,9 +199,14 @@ final class FileUpload
     }
 
     /** @return string|null Jalur folder penyimpanan, dibuat bila belum ada. */
-    private static function directory(): ?string
+    private static function directory(string $subdir = self::SUBDIR): ?string
     {
-        $directory = STORAGE_PATH . '/uploads/' . self::SUBDIR;
+        // Nama folder divalidasi pola tetap, bukan diambil dari input pengguna.
+        if (preg_match('/^[a-z][a-z0-9_-]{1,19}$/', $subdir) !== 1) {
+            return null;
+        }
+
+        $directory = STORAGE_PATH . '/uploads/' . $subdir;
 
         if (!is_dir($directory) && !@mkdir($directory, 0775, true) && !is_dir($directory)) {
             return null;

@@ -40,6 +40,7 @@ date_default_timezone_set($config['app']['timezone']);
 
 require BASE_PATH . '/app/Helpers/url.php';
 require BASE_PATH . '/app/Helpers/functions.php';
+require BASE_PATH . '/app/Helpers/mbg.php';
 require BASE_PATH . '/app/Helpers/validation.php';
 
 ErrorHandler::register((bool) $config['app']['debug'], STORAGE_PATH . '/logs');

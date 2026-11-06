@@ -90,11 +90,21 @@ final class Database
      * memilih nomor yang sama, sehingga index UNIQUE menolak salah satunya.
      * Ulangi seluruh pekerjaan dengan transaksi baru agar alokasi berikutnya
      * melihat baris yang baru saja berkommit.
+     *
+     * Panggilan bersarang tidak membuka transaksi kedua. Model boleh membungkus
+     * pekerjaannya sendiri tanpa tahu apakah controller sudah membuka transaksi,
+     * dan suite pengujian dapat membungkus seluruh pelaksanaan dalam satu transaksi
+     * yang dibatalkan di akhir.
      */
     public static function transaction(callable $callback): mixed
     {
+        $pdo = self::connection();
+
+        if ($pdo->inTransaction()) {
+            return $callback();
+        }
+
         for ($attempt = 1; ; $attempt++) {
-            $pdo = self::connection();
             $pdo->beginTransaction();
 
             try {

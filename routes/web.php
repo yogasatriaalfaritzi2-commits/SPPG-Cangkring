@@ -3,12 +3,20 @@ declare(strict_types=1);
 
 use App\Controllers\ActivityController;
 use App\Controllers\AuthController;
+use App\Controllers\BeneficiaryController;
 use App\Controllers\BudgetController;
 use App\Controllers\CategoryController;
 use App\Controllers\DashboardController;
 use App\Controllers\DocumentController;
 use App\Controllers\FinanceDashboardController;
+use App\Controllers\IngredientController;
+use App\Controllers\MbgCatalogController;
+use App\Controllers\MbgDashboardController;
+use App\Controllers\MenuController;
+use App\Controllers\MenuRuleController;
+use App\Controllers\MenuScheduleController;
 use App\Controllers\NotificationController;
+use App\Controllers\NutritionController;
 use App\Controllers\ProfileController;
 use App\Controllers\ProgressController;
 use App\Controllers\ProjectController;
@@ -16,6 +24,7 @@ use App\Controllers\RabController;
 use App\Controllers\RabItemController;
 use App\Controllers\RoleController;
 use App\Controllers\ScheduleController;
+use App\Controllers\SchoolController;
 use App\Controllers\SettingsController;
 use App\Controllers\TeamController;
 use App\Controllers\TransactionController;
@@ -128,6 +137,116 @@ return static function (Router $router): void {
     $router->get('/jadwal/{id}', [ScheduleController::class, 'show'], $permission('schedules.view'));
 
     $router->post('/ketergantungan/{id}/hapus', [ScheduleController::class, 'destroyDependency'], $permission('schedules.update'));
+
+    // Modul MBG. Sama seperti modul keuangan, segmen tetap (impor, ekspor, catat, individu,
+    // riwayat, tambah) didaftarkan sebelum {id} karena {id} dapat menelan nama aksi.
+    $router->get('/mbg', [MbgDashboardController::class, 'index'], $permission('dashboard.view'));
+
+    $router->get('/sekolah', [SchoolController::class, 'index'], $permission('schools.view'));
+    $router->get('/sekolah/ekspor', [SchoolController::class, 'export'], $permission('schools.export'));
+    $router->get('/sekolah/impor', [SchoolController::class, 'importForm'], $permission('schools.import'));
+    $router->post('/sekolah/impor', [SchoolController::class, 'import'], $permission('schools.import'));
+    $router->get('/sekolah/tambah', [SchoolController::class, 'create'], $permission('schools.create'));
+    $router->post('/sekolah/tambah', [SchoolController::class, 'store'], $permission('schools.create'));
+    $router->post('/sekolah/{id}/pelayanan', [SchoolController::class, 'storeDay'], $permission('schools.update'));
+    $router->post('/sekolah/{id}/pelayanan/{day}/ubah', [SchoolController::class, 'updateDay'], $permission('schools.update'));
+    $router->post('/sekolah/{id}/pelayanan/{day}/hapus', [SchoolController::class, 'destroyDay'], $permission('schools.update'));
+    $router->get('/sekolah/{id}/ubah', [SchoolController::class, 'edit'], $permission('schools.update'));
+    $router->post('/sekolah/{id}/ubah', [SchoolController::class, 'update'], $permission('schools.update'));
+    $router->post('/sekolah/{id}/status', [SchoolController::class, 'status'], $permission('schools.archive'));
+    $router->post('/sekolah/{id}/hapus', [SchoolController::class, 'destroy'], $permission('schools.manage'));
+    $router->get('/sekolah/{id}', [SchoolController::class, 'show'], $permission('schools.view'));
+
+    $router->get('/penerima-manfaat', [BeneficiaryController::class, 'index'], $permission('beneficiaries.view'));
+    $router->get('/penerima-manfaat/riwayat', [BeneficiaryController::class, 'histories'], $permission('beneficiaries.view'));
+    $router->get('/penerima-manfaat/ekspor', [BeneficiaryController::class, 'export'], $permission('beneficiaries.export'));
+    $router->get('/penerima-manfaat/catat', [BeneficiaryController::class, 'create'], $permission('beneficiaries.manage'));
+    $router->post('/penerima-manfaat/catat', [BeneficiaryController::class, 'store'], $permission('beneficiaries.manage'));
+    // Mode individu hanya rutenya gated oleh individual.view; hak ubahnya diperiksa ulang di
+    // controller karena keduanya (lihat dan tulis) harus dipegang sekaligus.
+    $router->get('/penerima-manfaat/individu', [BeneficiaryController::class, 'individual'], $permission('beneficiaries.individual.view'));
+    $router->post('/penerima-manfaat/individu', [BeneficiaryController::class, 'storeIndividual'], $permission('beneficiaries.individual.view'));
+    $router->post('/penerima-manfaat/individu/{id}/ubah', [BeneficiaryController::class, 'updateIndividual'], $permission('beneficiaries.individual.view'));
+    $router->post('/penerima-manfaat/individu/{id}/status', [BeneficiaryController::class, 'statusIndividual'], $permission('beneficiaries.individual.view'));
+    $router->post('/penerima-manfaat/individu/{id}/hapus', [BeneficiaryController::class, 'destroyIndividual'], $permission('beneficiaries.individual.view'));
+    $router->get('/penerima-manfaat/{id}/ubah', [BeneficiaryController::class, 'edit'], $permission('beneficiaries.manage'));
+    $router->post('/penerima-manfaat/{id}', [BeneficiaryController::class, 'update'], $permission('beneficiaries.manage'));
+    $router->post('/penerima-manfaat/{id}/status', [BeneficiaryController::class, 'status'], $permission('beneficiaries.manage'));
+    $router->post('/penerima-manfaat/{id}/hapus', [BeneficiaryController::class, 'destroy'], $permission('beneficiaries.manage'));
+    $router->get('/penerima-manfaat/{id}', [BeneficiaryController::class, 'show'], $permission('beneficiaries.view'));
+
+    // Data master MBG (jenjang, kategori penerima, kategori bahan, kategori menu). Rute ini
+    // terbuka untuk salah satu dari empat hak; controller memeriksa hak per jenis data.
+    $master = $permission('schools.manage,beneficiaries.manage,nutrition.manage,menus.manage');
+    $router->get('/mbg/master/{kind}', [MbgCatalogController::class, 'index'], $master);
+    $router->post('/mbg/master/{kind}', [MbgCatalogController::class, 'store'], $master);
+    $router->post('/mbg/master/{kind}/{id}/ubah', [MbgCatalogController::class, 'update'], $master);
+    $router->post('/mbg/master/{kind}/{id}/hapus', [MbgCatalogController::class, 'destroy'], $master);
+
+    $router->get('/bahan', [IngredientController::class, 'index'], $permission('nutrition.view'));
+    $router->get('/bahan/ekspor', [IngredientController::class, 'export'], $permission('nutrition.export'));
+    $router->get('/bahan/tambah', [IngredientController::class, 'create'], $permission('nutrition.manage'));
+    $router->post('/bahan/tambah', [IngredientController::class, 'store'], $permission('nutrition.manage'));
+    $router->post('/bahan/gizi/{id}/ubah', [IngredientController::class, 'updateNutrient'], $permission('nutrition.manage'));
+    $router->post('/bahan/gizi/{id}/hapus', [IngredientController::class, 'destroyNutrient'], $permission('nutrition.manage'));
+    $router->get('/referensi-gizi', [IngredientController::class, 'references'], $permission('nutrition.view'));
+    $router->post('/referensi-gizi', [IngredientController::class, 'storeReference'], $permission('nutrition.manage'));
+    $router->post('/referensi-gizi/{id}/ubah', [IngredientController::class, 'updateReference'], $permission('nutrition.manage'));
+    $router->post('/referensi-gizi/{id}/hapus', [IngredientController::class, 'destroyReference'], $permission('nutrition.manage'));
+    $router->get('/bahan/{id}/ubah', [IngredientController::class, 'edit'], $permission('nutrition.manage'));
+    $router->post('/bahan/{id}/ubah', [IngredientController::class, 'update'], $permission('nutrition.manage'));
+    $router->post('/bahan/{id}/gizi', [IngredientController::class, 'storeNutrient'], $permission('nutrition.manage'));
+    $router->post('/bahan/{id}/hapus', [IngredientController::class, 'destroy'], $permission('nutrition.manage'));
+    $router->get('/bahan/{id}', [IngredientController::class, 'show'], $permission('nutrition.view'));
+
+    $router->get('/menu', [MenuController::class, 'index'], $permission('menus.view'));
+    $router->get('/menu/revisi', [MenuController::class, 'revisions'], $permission('menus.view'));
+    $router->get('/menu/rekomendasi', [MenuController::class, 'suggest'], $permission('menus.view'));
+    $router->get('/menu/tambah', [MenuController::class, 'create'], $permission('menus.create,menus.manage'));
+    $router->post('/menu/tambah', [MenuController::class, 'store'], $permission('menus.create,menus.manage'));
+    $router->get('/menu/{id}/foto', [MenuController::class, 'photo'], $permission('menus.view'));
+    $router->post('/menu/{id}/foto/hapus', [MenuController::class, 'removePhoto'], $permission('menus.update,menus.manage'));
+    $router->get('/menu/{id}/ubah', [MenuController::class, 'edit'], $permission('menus.update,menus.manage'));
+    $router->post('/menu/{id}/ubah', [MenuController::class, 'update'], $permission('menus.update,menus.manage'));
+    $router->get('/menu/{id}/revisi', [MenuController::class, 'reviseForm'], $permission('menus.revision,menus.manage'));
+    $router->post('/menu/{id}/revisi', [MenuController::class, 'revise'], $permission('menus.revision,menus.manage'));
+    $router->post('/menu/{id}/kirim', [MenuController::class, 'submit'], $permission('menus.create,menus.update,menus.manage'));
+    $router->post('/menu/{id}/keputusan', [MenuController::class, 'decide'], $permission('menus.approve'));
+    $router->post('/menu/{id}/batalkan', [MenuController::class, 'withdraw'], $permission('menus.create,menus.update,menus.manage'));
+    $router->post('/menu/{id}/hapus', [MenuController::class, 'destroy'], $permission('menus.manage'));
+    $router->get('/menu/{id}', [MenuController::class, 'show'], $permission('menus.view'));
+
+    $router->get('/jadwal-menu', [MenuScheduleController::class, 'index'], $permission('menu_schedules.view'));
+    $router->get('/jadwal-menu/kebutuhan-bahan/ekspor', [MenuScheduleController::class, 'exportMaterials'], $permission('nutrition.export'));
+    $router->get('/jadwal-menu/kebutuhan-bahan', [MenuScheduleController::class, 'materials'], $permission('menu_schedules.view'));
+    $router->get('/jadwal-menu/tambah', [MenuScheduleController::class, 'create'], $permission('menu_schedules.manage'));
+    $router->post('/jadwal-menu/tambah', [MenuScheduleController::class, 'store'], $permission('menu_schedules.manage'));
+    $router->post('/jadwal-menu/salin', [MenuScheduleController::class, 'copyDay'], $permission('menu_schedules.manage'));
+    $router->get('/jadwal-menu/{id}/ubah', [MenuScheduleController::class, 'edit'], $permission('menu_schedules.manage'));
+    $router->post('/jadwal-menu/{id}/ubah', [MenuScheduleController::class, 'update'], $permission('menu_schedules.manage'));
+    $router->post('/jadwal-menu/{id}/kirim', [MenuScheduleController::class, 'submit'], $permission('menu_schedules.manage'));
+    $router->post('/jadwal-menu/{id}/keputusan', [MenuScheduleController::class, 'decide'], $permission('menus.approve,menu_schedules.manage'));
+    $router->post('/jadwal-menu/{id}/selesai', [MenuScheduleController::class, 'complete'], $permission('menu_schedules.manage'));
+    $router->post('/jadwal-menu/{id}/hapus', [MenuScheduleController::class, 'destroy'], $permission('menu_schedules.manage'));
+    $router->get('/jadwal-menu/{id}', [MenuScheduleController::class, 'show'], $permission('menu_schedules.view'));
+
+    $router->get('/analisis-gizi', [NutritionController::class, 'index'], $permission('nutrition.view'));
+    $router->get('/analisis-gizi/harian', [NutritionController::class, 'daily'], $permission('nutrition.view'));
+    $router->get('/analisis-gizi/ekspor', [NutritionController::class, 'export'], $permission('nutrition.export'));
+    $router->get('/analisis-gizi/{id}', [NutritionController::class, 'show'], $permission('nutrition.view'));
+    $router->get('/target-gizi', [NutritionController::class, 'targets'], $permission('nutrition.view'));
+    $router->post('/target-gizi/kelompok', [NutritionController::class, 'storeGroup'], $permission('nutrition.manage'));
+    $router->post('/target-gizi/kelompok/{id}', [NutritionController::class, 'updateGroup'], $permission('nutrition.manage'));
+    $router->post('/target-gizi/kelompok/{id}/hapus', [NutritionController::class, 'destroyGroup'], $permission('nutrition.manage'));
+    $router->post('/target-gizi/nilai', [NutritionController::class, 'storeTarget'], $permission('nutrition.manage'));
+    $router->post('/target-gizi/nilai/{id}', [NutritionController::class, 'updateTarget'], $permission('nutrition.manage'));
+    $router->post('/target-gizi/nilai/{id}/hapus', [NutritionController::class, 'destroyTarget'], $permission('nutrition.manage'));
+
+    $router->get('/aturan-menu', [MenuRuleController::class, 'index'], $permission('menus.view'));
+    $router->post('/aturan-menu', [MenuRuleController::class, 'store'], $permission('menus.manage'));
+    $router->get('/aturan-menu/uji/{id}', [MenuRuleController::class, 'check'], $permission('menus.view'));
+    $router->post('/aturan-menu/{id}', [MenuRuleController::class, 'update'], $permission('menus.manage'));
+    $router->post('/aturan-menu/{id}/hapus', [MenuRuleController::class, 'destroy'], $permission('menus.manage'));
 
     $router->get('/profil', [ProfileController::class, 'show'], $auth);
     $router->post('/profil/kata-sandi', [ProfileController::class, 'updatePassword'], $auth);

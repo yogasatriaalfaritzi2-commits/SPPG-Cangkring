@@ -21,6 +21,66 @@ $sidebarUser = auth_user();
                 <i class="bi bi-hammer" aria-hidden="true"></i><span>Proyek Pembangunan</span>
             </a>
         <?php endif; ?>
+
+        <?php if (can('schools.view') || can('beneficiaries.view') || can('menus.view')
+            || can('menu_schedules.view') || can('nutrition.view')): ?>
+            <p class="sidebar-label">Operasional MBG</p>
+
+            <a class="sidebar-link <?= \App\Core\App::currentPath() === '/mbg' ? 'active' : '' ?>" href="<?= url('/mbg') ?>">
+                <i class="bi bi-activity" aria-hidden="true"></i><span>Dashboard MBG</span>
+            </a>
+
+            <?php if (can('schools.view')): ?>
+                <a class="sidebar-link <?= nav_active('/sekolah') ?>" href="<?= url('/sekolah') ?>">
+                    <i class="bi bi-mortarboard" aria-hidden="true"></i><span>Sekolah Penerima</span>
+                </a>
+            <?php endif; ?>
+
+            <?php if (can('beneficiaries.view')): ?>
+                <a class="sidebar-link <?= nav_active('/penerima-manfaat') ?>" href="<?= url('/penerima-manfaat') ?>">
+                    <i class="bi bi-people" aria-hidden="true"></i><span>Penerima Manfaat</span>
+                </a>
+            <?php endif; ?>
+
+            <?php if (can('menus.view')): ?>
+                <a class="sidebar-link <?= nav_active('/menu') ?>" href="<?= url('/menu') ?>">
+                    <i class="bi bi-card-checklist" aria-hidden="true"></i><span>Menu MBG</span>
+                </a>
+            <?php endif; ?>
+
+            <?php if (can('menu_schedules.view')): ?>
+                <a class="sidebar-link <?= nav_active('/jadwal-menu') ?>" href="<?= url('/jadwal-menu') ?>">
+                    <i class="bi bi-calendar-week" aria-hidden="true"></i><span>Jadwal Menu</span>
+                </a>
+            <?php endif; ?>
+
+            <?php if (can('nutrition.view')): ?>
+                <a class="sidebar-link <?= nav_active('/bahan', '/referensi-gizi') ?>" href="<?= url('/bahan') ?>">
+                    <i class="bi bi-egg-fried" aria-hidden="true"></i><span>Bahan dan Gizi</span>
+                </a>
+
+                <a class="sidebar-link <?= nav_active('/analisis-gizi') ?>" href="<?= url('/analisis-gizi') ?>">
+                    <i class="bi bi-clipboard2-pulse" aria-hidden="true"></i><span>Analisis Gizi</span>
+                </a>
+
+                <a class="sidebar-link <?= nav_active('/target-gizi') ?>" href="<?= url('/target-gizi') ?>">
+                    <i class="bi bi-bullseye" aria-hidden="true"></i><span>Target Gizi</span>
+                </a>
+            <?php endif; ?>
+
+            <?php if (can('menus.view')): ?>
+                <a class="sidebar-link <?= nav_active('/aturan-menu') ?>" href="<?= url('/aturan-menu') ?>">
+                    <i class="bi bi-list-check" aria-hidden="true"></i><span>Aturan Menu</span>
+                </a>
+            <?php endif; ?>
+
+            <?php if (can('schools.manage') || can('beneficiaries.manage') || can('nutrition.manage') || can('menus.manage')): ?>
+                <a class="sidebar-link <?= nav_active('/mbg/master') ?>" href="<?= url('/mbg/master/jenjang') ?>">
+                    <i class="bi bi-database" aria-hidden="true"></i><span>Data Master MBG</span>
+                </a>
+            <?php endif; ?>
+        <?php endif; ?>
+
         <?php if (can('budgets.view') || can('transactions.view') || can('schedules.view')): ?>
             <p class="sidebar-label">Keuangan dan Jadwal</p>
 

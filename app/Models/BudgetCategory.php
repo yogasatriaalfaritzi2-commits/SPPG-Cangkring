@@ -139,9 +139,9 @@ final class BudgetCategory extends Model
         $row = self::fetchOne(
             'SELECT
                 (SELECT COUNT(*) FROM budget_items WHERE category_id = :id) AS items,
-                (SELECT COUNT(*) FROM financial_transactions WHERE category_id = :id) AS transactions,
-                (SELECT COUNT(*) FROM project_schedules WHERE category_id = :id AND is_deleted = 0) AS activities',
-            ['id' => $id]
+                (SELECT COUNT(*) FROM financial_transactions WHERE category_id = :id2) AS transactions,
+                (SELECT COUNT(*) FROM project_schedules WHERE category_id = :id3 AND is_deleted = 0) AS activities',
+            ['id' => $id, 'id2' => $id, 'id3' => $id]
         ) ?? [];
 
         return (int) ($row['items'] ?? 0) + (int) ($row['transactions'] ?? 0) + (int) ($row['activities'] ?? 0);

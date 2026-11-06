@@ -741,4 +741,128 @@ final class Notification extends Model
             ['user_id' => $userId]
         );
     }
+
+    /* ----------------------------------------------------------------------
+     * Modul MBG. Penerima dihitung dari izin, bukan dari nama peran, supaya
+     * penambahan peran baru tidak menuntut perubahan kode.
+     * -------------------------------------------------------------------- */
+
+    /** @return array<int, int> Pemegang izin yang berwenang memutus menu. */
+    public static function menuApproverAudience(int $exceptUserId = 0): array
+    {
+        return self::filterOut(User::idsWithPermission('menus.approve'), $exceptUserId);
+    }
+
+    /** @param array<string, mixed> $menu */
+    public static function menuSubmitted(array $menu, int $actorId): void
+    {
+        self::pushToMany(
+            self::menuApproverAudience($actorId),
+            'menu.submitted',
+            'Menu menunggu ahli gizi: ' . (string) $menu['menu_code'],
+            (string) $menu['menu_name'] . ' versi ' . (int) ($menu['version'] ?? 1)
+                . ' diajukan oleh ' . self::person($menu, 'creator_name', $actorId) . '.',
+            '/menu/' . (int) $menu['id'],
+            null,
+            'menu-submitted-' . (int) $menu['id'] . '-' . self::stamp()
+        );
+    }
+
+    /** @param array<string, mixed> $menu */
+    public static function menuDecided(array $menu, string $decision, int $actorId): void
+    {
+        $ids = [(int) ($menu['created_by'] ?? 0), (int) ($menu['submitted_by'] ?? 0)];
+        $note = (string) ($menu['decision_note'] ?? '');
+
+        self::pushToMany(
+            self::filterOut($ids, $actorId),
+            'menu.decided',
+            ($decision === Menu::STATUS_APPROVED ? 'Menu disetujui: ' : 'Menu ditolak: ')
+                . (string) $menu['menu_code'],
+            (string) $menu['menu_name'] . ' diputus oleh '
+                . self::person($menu, 'reviewer_name', $actorId) . '.'
+                . ($note !== '' ? ' Catatan: ' . mb_substr($note, 0, 120) : ''),
+            '/menu/' . (int) $menu['id'],
+            null,
+            'menu-decided-' . (int) $menu['id'] . '-' . self::stamp()
+        );
+    }
+
+    /** @param array<string, mixed> $revision */
+    public static function menuRevisionSubmitted(array $revision, int $actorId): void
+    {
+        self::pushToMany(
+            self::menuApproverAudience($actorId),
+            'menu.revision',
+            'Usulan revisi menu: ' . (string) $revision['revision_code'],
+            'Menu ' . (string) $revision['menu_code'] . ' diusulkan berubah. Alasan: '
+                . mb_substr((string) $revision['reason'], 0, 120),
+            '/menu/' . (int) $revision['menu_id'],
+            null,
+            'menu-revision-' . (int) $revision['id'] . '-submitted'
+        );
+    }
+
+    /** @param array<string, mixed> $revision */
+    public static function menuRevisionDecided(array $revision, string $decision, int $actorId): void
+    {
+        self::pushToMany(
+            self::filterOut([(int) ($revision['requested_by'] ?? 0)], $actorId),
+            'menu.revision.decided',
+            ($decision === MenuRevision::STATUS_APPROVED ? 'Revisi menu disetujui: ' : 'Revisi menu ditolak: ')
+                . (string) $revision['revision_code'],
+            'Keputusan atas usulan perubahan menu ' . (string) ($revision['menu_code'] ?? '') . '.'
+                . ((string) ($revision['decision_note'] ?? '') !== ''
+                    ? ' Catatan: ' . mb_substr((string) $revision['decision_note'], 0, 120) : ''),
+            '/menu/' . (int) $revision['menu_id'],
+            null,
+            'menu-revision-' . (int) $revision['id'] . '-decided'
+        );
+    }
+
+    /** @param array<string, mixed> $schedule */
+    public static function menuScheduleSubmitted(array $schedule, int $actorId): void
+    {
+        self::pushToMany(
+            self::filterOut(User::idsWithPermission('menu_schedules.manage'), $actorId),
+            'menu_schedule.submitted',
+            'Jadwal menu menunggu persetujuan: ' . (string) $schedule['schedule_code'],
+            (string) $schedule['service_date'] . ' ' . meal_slot_label((string) $schedule['meal_slot'])
+                . ' untuk ' . (int) $schedule['portion_total'] . ' porsi.',
+            '/jadwal-menu/' . (int) $schedule['id'],
+            null,
+            'menu-schedule-' . (int) $schedule['id'] . '-' . self::stamp()
+        );
+    }
+
+    /** @param array<string, mixed> $schedule */
+    public static function menuScheduleDecided(array $schedule, string $decision, int $actorId): void
+    {
+        self::pushToMany(
+            self::filterOut([(int) ($schedule['submitted_by'] ?? 0), (int) ($schedule['created_by'] ?? 0)], $actorId),
+            'menu_schedule.decided',
+            ($decision === MenuSchedule::STATUS_APPROVED ? 'Jadwal menu disetujui: ' : 'Jadwal menu ditolak: ')
+                . (string) $schedule['schedule_code'],
+            (string) $schedule['service_date'] . ' ' . meal_slot_label((string) $schedule['meal_slot'])
+                . ' diputus oleh ' . self::person($schedule, 'reviewer_name', $actorId) . '.',
+            '/jadwal-menu/' . (int) $schedule['id'],
+            null,
+            'menu-schedule-' . (int) $schedule['id'] . '-decided-' . self::stamp()
+        );
+    }
+
+    /** Peringatan MoA sekolah yang akan berakhir, dipakai dashboard MBG. */
+    public static function partnershipExpiring(array $school): void
+    {
+        self::pushToMany(
+            User::idsWithPermission('schools.manage'),
+            'school.partnership',
+            'Kerja sama sekolah akan berakhir: ' . (string) $school['school_name'],
+            'MoA berakhir pada ' . (string) $school['partnership_end']
+                . '. Jumlah penerima manfaat ' . (int) ($school['beneficiary_total'] ?? 0) . ' siswa.',
+            '/sekolah/' . (int) $school['id'],
+            null,
+            'school-partnership-' . (int) $school['id'] . '-' . mb_substr((string) $school['partnership_end'], 0, 10)
+        );
+    }
 }

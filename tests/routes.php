@@ -102,7 +102,39 @@ foreach ($routes as $later => $route) {
     }
 }
 
+// Slug yang menutup rute harus benar-benar ada pada tabel permissions. Slug fiktif
+// membuat rute selamanya ditolak, termasuk bagi Super Admin, tanpa ada yang sadar.
+$guardPrefix = \App\Middleware\PermissionMiddleware::class . ':';
+$declared = [];
+
+foreach ($routes as $route) {
+    foreach ($route['middleware'] as $definition) {
+        if (!is_string($definition) || !str_starts_with($definition, $guardPrefix)) {
+            continue;
+        }
+
+        foreach (explode(',', substr($definition, strlen($guardPrefix))) as $slug) {
+            $slug = trim($slug);
+            if ($slug !== '') {
+                $declared[$slug] = true;
+            }
+        }
+    }
+}
+
+$stored = [];
+foreach (\App\Core\Database::query('SELECT permission_slug FROM permissions')->fetchAll() as $row) {
+    $stored[(string) $row['permission_slug']] = true;
+}
+
+foreach (array_keys($declared) as $slug) {
+    if (!isset($stored[$slug])) {
+        $errors[] = "Rute memakai slug izin yang tidak ada di database: {$slug}";
+    }
+}
+
 printf("Rute terdaftar: %d\n", count($routes));
+printf("Slug izin terpakai: %d dari %d yang terdaftar di database\n", count($declared), count($stored));
 
 if ($errors === []) {
     echo "Semua rute menunjuk metode yang ada dan tidak saling menutupi.\n";

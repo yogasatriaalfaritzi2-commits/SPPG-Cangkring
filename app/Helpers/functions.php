@@ -85,6 +85,11 @@ function module_label(string $module): string
         'transactions' => 'Transaksi keuangan',
         'schedules' => 'Jadwal pembangunan',
         'categories' => 'Kategori pekerjaan',
+        'mbg' => 'Data master MBG',
+        'schools' => 'Sekolah penerima MBG',
+        'beneficiaries' => 'Penerima manfaat MBG',
+        'menus' => 'Menu dan jadwal MBG',
+        'nutrition' => 'Bahan dan gizi MBG',
         default => $module === '' ? 'Sistem' : ucfirst($module),
     };
 }
@@ -246,6 +251,13 @@ function notification_type_label(mixed $type): string
         'schedule.due' => 'Jadwal mendekati tenggat',
         'schedule.late' => 'Jadwal terlambat',
         'schedule.changed' => 'Jadwal berubah',
+        'menu.submitted' => 'Menu menunggu persetujuan',
+        'menu.decided' => 'Keputusan menu',
+        'menu.revision' => 'Revisi menu diajukan',
+        'menu.revision.decided' => 'Keputusan revisi menu',
+        'menu_schedule.submitted' => 'Jadwal menu menunggu persetujuan',
+        'menu_schedule.decided' => 'Keputusan jadwal menu',
+        'school.partnership' => 'Masa kerja sama sekolah',
         default => 'Umum',
     };
 }
