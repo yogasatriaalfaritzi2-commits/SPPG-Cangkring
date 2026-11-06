@@ -200,6 +200,7 @@ return static function (Router $router): void {
     $router->get('/bahan/{id}', [IngredientController::class, 'show'], $permission('nutrition.view'));
 
     $router->get('/menu', [MenuController::class, 'index'], $permission('menus.view'));
+    $router->get('/menu/ekspor', [MenuController::class, 'export'], $permission('menus.view'));
     $router->get('/menu/revisi', [MenuController::class, 'revisions'], $permission('menus.view'));
     $router->get('/menu/rekomendasi', [MenuController::class, 'suggest'], $permission('menus.view'));
     $router->get('/menu/tambah', [MenuController::class, 'create'], $permission('menus.create,menus.manage'));

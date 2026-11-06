@@ -374,6 +374,51 @@ final class Menu extends Model
     }
 
     /**
+     * Seluruh menu yang sesuai filter untuk diekspor (tanpa batas per halaman).
+     *
+     * @param array<string, string> $filters
+     * @return array<int, array<string, mixed>>
+     */
+    public static function forExport(array $filters): array
+    {
+        $conditions = [];
+        $params = [];
+
+        if ($filters['search'] !== '') {
+            $conditions[] = '(LOCATE(:search_code, m.menu_code) > 0 OR LOCATE(:search_name, m.menu_name) > 0'
+                . ' OR LOCATE(:search_allergen, COALESCE(m.allergen_info, \'\')) > 0)';
+            foreach (['search_code', 'search_name', 'search_allergen'] as $key) {
+                $params[$key] = $filters['search'];
+            }
+        }
+
+        if ($filters['category'] !== '' && ctype_digit($filters['category'])) {
+            $conditions[] = 'm.category_id = :category_id';
+            $params['category_id'] = $filters['category'];
+        }
+
+        if (in_array($filters['status'], self::STATUSES, true)) {
+            $conditions[] = 'm.menu_status = :menu_status';
+            $params['menu_status'] = $filters['status'];
+        }
+
+        if (in_array($filters['nutrition'], ['lengkap', 'sebagian', 'belum_tersedia'], true)) {
+            $conditions[] = 'm.nutrition_status = :nutrition_status';
+            $params['nutrition_status'] = $filters['nutrition'];
+        }
+
+        $where = $conditions === [] ? '' : ' WHERE ' . implode(' AND ', $conditions);
+
+        return self::fetchAll(
+            'SELECT ' . self::FIELDS
+            . ', (SELECT COUNT(*) FROM menu_ingredients i WHERE i.menu_id = m.id) AS item_count'
+            . self::FROM . $where
+            . ' ORDER BY m.menu_name ASC LIMIT 1000',
+            $params
+        );
+    }
+
+    /**
      * Menu yang boleh dijadwalkan. Hanya menu yang sudah disetujui dan tidak butuh
      * verifikasi tambahan yang ditawarkan pada perencana.
      *

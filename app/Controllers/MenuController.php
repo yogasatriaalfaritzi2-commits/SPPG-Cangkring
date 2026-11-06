@@ -5,6 +5,7 @@ namespace App\Controllers;
 
 use App\Core\App;
 use App\Core\Controller;
+use App\Core\Csv;
 use App\Core\Database;
 use App\Core\Env;
 use App\Core\Exceptions\NotFoundHttpException;
@@ -57,7 +58,38 @@ final class MenuController extends Controller
             'basePath' => '/menu',
             'canCreate' => can('menus.create') || can('menus.manage'),
             'canApprove' => can('menus.approve'),
+            'canExport' => can('menus.export') || can('nutrition.export') || can('menus.view'),
         ]);
+    }
+
+    /** Ekspor katalog menu MBG ke berkas CSV. */
+    public function export(Request $request): void
+    {
+        $filters = $this->filters($request);
+        $menus = Menu::forExport($filters);
+
+        Csv::send(
+            'katalog-menu-mbg-' . date('Ymd-His') . '.csv',
+            [
+                'Kode Menu', 'Nama Menu', 'Kategori', 'Waktu Saji', 'Status',
+                'Status Gizi', 'Kalori (kkal)', 'Estimasi Biaya per Porsi', 'Jumlah Bahan',
+                'Alergen', 'Versi', 'Dibuat Oleh',
+            ],
+            array_map(static fn (array $m): array => [
+                $m['menu_code'] ?? '',
+                $m['menu_name'] ?? '',
+                $m['category_name'] ?? '',
+                slot_label((string) ($m['meal_slot'] ?? '')),
+                menu_status_label((string) ($m['menu_status'] ?? '')),
+                nutrition_status_label((string) ($m['nutrition_status'] ?? '')),
+                rtrim(rtrim(number_format((float) ($m['estimated_energy_kcal'] ?? 0), 2, ',', ''), '0'), ','),
+                rupiah((float) ($m['estimated_cost_per_serving'] ?? 0)),
+                (int) ($m['item_count'] ?? 0),
+                $m['allergen_info'] ?? '—',
+                'v' . ($m['version'] ?? 1),
+                $m['creator_name'] ?? '—',
+            ], $menus)
+        );
     }
 
     public function create(Request $request): void

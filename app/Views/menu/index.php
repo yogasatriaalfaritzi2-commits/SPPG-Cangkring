@@ -10,6 +10,11 @@
         <p class="page-subtitle">Perancangan susunan menu makan bergizi, alur persetujuan ahli gizi, dan kalkulasi nilai nutrisi.</p>
     </div>
     <div class="page-actions d-flex gap-2">
+        <?php if (!empty($canExport)): ?>
+            <a class="btn btn-outline-secondary" href="<?= url('/menu/ekspor?' . http_build_query(array_filter($filters ?? []))) ?>" title="Unduh Katalog Menu (CSV)">
+                <i class="bi bi-download me-1"></i>Ekspor CSV
+            </a>
+        <?php endif; ?>
         <a class="btn btn-outline-secondary" href="<?= url('/aturan-menu') ?>">
             <i class="bi bi-list-check me-1"></i>Aturan Menu
         </a>
