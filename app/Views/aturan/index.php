@@ -40,8 +40,9 @@
                                     <td><span class="badge bg-light text-dark border"><?= e($scopes[$r['applies_to']] ?? $r['applies_to']) ?></span></td>
                                     <td class="fw-bold"><?= (float)$r['threshold_value'] ?></td>
                                     <td>
-                                        <span class="badge <?= ($r['severity'] ?? 'wajib') === 'wajib' ? 'bg-danger' : 'bg-warning text-dark' ?>">
-                                            <?= e(ucfirst((string)$r['severity'])) ?>
+                                        <?php $sev = $r['rule_severity'] ?? $r['severity'] ?? 'peringatan'; ?>
+                                        <span class="badge <?= $sev === 'harus' ? 'bg-danger' : ($sev === 'info' ? 'bg-info' : 'bg-warning text-dark') ?>">
+                                            <?= e(ucfirst((string)$sev)) ?>
                                         </span>
                                     </td>
                                     <td>

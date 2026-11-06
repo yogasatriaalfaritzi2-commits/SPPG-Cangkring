@@ -59,6 +59,23 @@ function meal_slot_label(mixed $slot): string
     };
 }
 
+function slot_label(mixed $slot): string
+{
+    return meal_slot_label($slot);
+}
+
+function status_badge_class(mixed $status): string
+{
+    $st = (string) $status;
+    return match ($st) {
+        'aktif', 'approved', 'disetujui', 'selesai', 'tercapai', 'sesuai' => 'pill-success',
+        'pending', 'menunggu', 'draft', 'draf', 'terjadwal', 'rencana' => 'pill-info',
+        'perlu_perbaikan', 'peringatan', 'kurang', 'lebih' => 'pill-warning',
+        'nonaktif', 'arsip', 'batal', 'ditolak', 'tidak_memenuhi' => 'pill-danger',
+        default => 'pill-muted',
+    };
+}
+
 function menu_status_label(mixed $status): string
 {
     return match ((string) $status) {

@@ -29,7 +29,7 @@ $isEdit = isset($row);
                         <?php endforeach; ?>
                     </select>
                     <?php if ($isEdit): ?>
-                        <input type="hidden" name="school_id" value="<?= e($form['school_id']) ?>">
+                        <input type="hidden" name="school_id" value="<?= e($form['school_id'] ?? $row['school_id'] ?? '') ?>">
                     <?php endif; ?>
                 </div>
 

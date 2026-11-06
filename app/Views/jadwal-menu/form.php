@@ -3,6 +3,7 @@
  * View Form Susun / Ubah Jadwal Menu
  */
 $isEdit = ($mode === 'update');
+$actionUrl = $isEdit ? url('/jadwal-menu/' . ($schedule['id'] ?? $form['id'] ?? 0) . '/ubah') : url('/jadwal-menu/tambah');
 ?>
 <div class="page-head">
     <div>
@@ -11,7 +12,7 @@ $isEdit = ($mode === 'update');
     </div>
 </div>
 
-<form method="post" action="<?= $isEdit ? url('/jadwal-menu/' . $form['id'] . '/ubah') : url('/jadwal-menu/tambah') ?>">
+<form method="post" action="<?= $actionUrl ?>">
     <?= csrf_field() ?>
     <div class="row g-4">
         <div class="col-12 col-lg-5">

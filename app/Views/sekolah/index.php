@@ -33,14 +33,14 @@
         <form class="toolbar-form" method="get" action="<?= url('/sekolah') ?>">
             <div class="toolbar-field">
                 <label class="form-label" for="q">Cari</label>
-                <input class="form-control form-control-sm" type="search" id="q" name="q" value="<?= e($filters['q']) ?>" placeholder="Nama, kode, atau NPSN...">
+                <input class="form-control form-control-sm" type="search" id="q" name="q" value="<?= e($filters['q'] ?? $filters['search'] ?? '') ?>" placeholder="Nama, kode, atau NPSN...">
             </div>
             <div class="toolbar-field">
                 <label class="form-label" for="level">Jenjang</label>
                 <select class="form-select form-select-sm" id="level" name="level">
                     <option value="">Semua Jenjang</option>
                     <?php foreach ($levels as $lvl): ?>
-                        <option value="<?= e($lvl['level_code']) ?>" <?= $filters['level'] === $lvl['level_code'] ? 'selected' : '' ?>>
+                        <option value="<?= e($lvl['id']) ?>" <?= (string)($filters['level'] ?? '') === (string)$lvl['id'] ? 'selected' : '' ?>>
                             <?= e($lvl['level_name']) ?>
                         </option>
                     <?php endforeach; ?>
@@ -51,7 +51,7 @@
                 <select class="form-select form-select-sm" id="status" name="status">
                     <option value="">Semua Status</option>
                     <?php foreach ($statuses as $st): ?>
-                        <option value="<?= e($st) ?>" <?= $filters['status'] === $st ? 'selected' : '' ?>><?= e(status_label($st)) ?></option>
+                        <option value="<?= e($st) ?>" <?= ($filters['status'] ?? '') === $st ? 'selected' : '' ?>><?= e(status_label($st)) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
