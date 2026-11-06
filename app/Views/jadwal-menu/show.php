@@ -15,6 +15,9 @@ $schId = (int)$schedule['id'];
         </p>
     </div>
     <div class="page-actions d-flex gap-2">
+        <a class="btn btn-outline-primary" href="<?= url('/jadwal-menu/' . $schId . '/surat-jalan') ?>" target="_blank">
+            <i class="bi bi-printer me-1"></i>Cetak Surat Jalan
+        </a>
         <?php if ($editable && $canManage): ?>
             <a class="btn btn-outline-secondary" href="<?= url('/jadwal-menu/' . $schId . '/ubah') ?>">
                 <i class="bi bi-pencil me-1"></i>Sunting

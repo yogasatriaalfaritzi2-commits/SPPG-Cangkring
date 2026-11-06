@@ -151,6 +151,20 @@ final class MenuScheduleController extends Controller
             'canManage' => can('menu_schedules.manage'),
             'canDecide' => can('menus.approve') || can('menu_schedules.manage'),
             'editable' => $this->canEdit($schedule),
+            'printable' => in_array((string) $schedule['schedule_status'], ['approved', 'completed'], true),
+        ]);
+    }
+
+    /** Mencetak lembar surat jalan distribusi MBG siap cetak atau simpan ke PDF. */
+    public function printDeliveryNote(Request $request, string $id): void
+    {
+        $schedule = $this->findSchedule($id);
+        $scheduleId = (int) $schedule['id'];
+
+        $this->view('jadwal-menu/delivery_note', [
+            'title' => 'Surat Jalan - ' . $schedule['schedule_code'],
+            'schedule' => $schedule,
+            'allocations' => MenuSchedule::allocations($scheduleId),
         ]);
     }
 
