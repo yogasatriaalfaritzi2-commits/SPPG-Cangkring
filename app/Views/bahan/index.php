@@ -31,14 +31,14 @@
         <form class="toolbar-form" method="get" action="<?= url('/bahan') ?>">
             <div class="toolbar-field">
                 <label class="form-label" for="q">Cari Bahan</label>
-                <input class="form-control form-control-sm" type="search" id="q" name="q" value="<?= e($filters['q']) ?>" placeholder="Nama atau kode bahan...">
+                <input class="form-control form-control-sm" type="search" id="q" name="q" value="<?= e($filters['q'] ?? $filters['search'] ?? '') ?>" placeholder="Nama atau kode bahan...">
             </div>
             <div class="toolbar-field">
                 <label class="form-label" for="category">Kategori</label>
                 <select class="form-select form-select-sm" id="category" name="category">
                     <option value="">Semua Kategori</option>
                     <?php foreach ($categories as $cat): ?>
-                        <option value="<?= e($cat['id']) ?>" <?= (string)$filters['category'] === (string)$cat['id'] ? 'selected' : '' ?>>
+                        <option value="<?= e($cat['id']) ?>" <?= (string)($filters['category'] ?? '') === (string)$cat['id'] ? 'selected' : '' ?>>
                             <?= e($cat['category_name']) ?>
                         </option>
                     <?php endforeach; ?>

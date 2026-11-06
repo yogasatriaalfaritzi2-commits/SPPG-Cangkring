@@ -29,14 +29,14 @@
         <form class="toolbar-form" method="get" action="<?= url('/menu') ?>">
             <div class="toolbar-field">
                 <label class="form-label" for="q">Cari Menu</label>
-                <input class="form-control form-control-sm" type="search" id="q" name="q" value="<?= e($filters['q']) ?>" placeholder="Nama atau kode menu...">
+                <input class="form-control form-control-sm" type="search" id="q" name="q" value="<?= e($filters['q'] ?? $filters['search'] ?? '') ?>" placeholder="Nama atau kode menu...">
             </div>
             <div class="toolbar-field">
                 <label class="form-label" for="status">Status Persetujuan</label>
                 <select class="form-select form-select-sm" id="status" name="status">
                     <option value="">Semua Status</option>
                     <?php foreach ($statuses as $st): ?>
-                        <option value="<?= e($st) ?>" <?= $filters['status'] === $st ? 'selected' : '' ?>><?= e(menu_status_label($st)) ?></option>
+                        <option value="<?= e($st) ?>" <?= ($filters['status'] ?? '') === $st ? 'selected' : '' ?>><?= e(menu_status_label($st)) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
