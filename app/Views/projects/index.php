@@ -25,10 +25,6 @@ $sortIcon = static function (string $key) use ($filters): string {
     <div>
         <p class="eyebrow">Pembangunan</p>
         <h1 class="page-title">Manajemen Proyek Pembangunan</h1>
-        <p class="page-subtitle">
-            Daftar proyek, anggaran, progres, dan status diambil langsung dari database
-            serta disaring sesuai hak akses peran Anda.
-        </p>
     </div>
     <?php if (can('projects.create')): ?>
         <div class="page-actions">
