@@ -279,19 +279,7 @@ $pacePercent = static fn (?float $value): string => $value === null ? '—' : pe
                         ? nl2br(e((string) $project['address']))
                         : 'Belum diisi' ?></dd>
                 </div>
-                <div>
-                    <dt>Lintang (latitude)</dt>
-                    <dd><?= $project['latitude'] !== null ? e((string) $project['latitude']) : 'Belum diisi' ?></dd>
-                </div>
-                <div>
-                    <dt>Bujur (longitude)</dt>
-                    <dd><?= $project['longitude'] !== null ? e((string) $project['longitude']) : 'Belum diisi' ?></dd>
-                </div>
             </dl>
-            <p class="muted-note">
-                Peta interaktif belum tersedia karena aplikasi tidak memuat layanan peta eksternal.
-                Koordinat di atas dapat disalin langsung ke aplikasi peta pilihan Anda.
-            </p>
         </section>
     </div>
 

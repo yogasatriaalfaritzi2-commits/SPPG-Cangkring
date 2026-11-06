@@ -98,24 +98,6 @@ $action = $isEdit ? url('/proyek/' . $projectId . '/ubah') : url('/proyek/tambah
                                       maxlength="1000"><?= e($form['address']) ?></textarea>
                         </div>
                     </div>
-
-                    <div class="col-12 col-md-6">
-                        <div class="form-group mb-0">
-                            <label class="form-label" for="latitude">Lintang (latitude)</label>
-                            <input class="form-control" type="text" id="latitude" name="latitude" inputmode="decimal"
-                                   value="<?= e((string) $form['latitude']) ?>" placeholder="-7.1234567">
-                            <div class="form-text">Rentang -90 sampai 90.</div>
-                        </div>
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <div class="form-group mb-0">
-                            <label class="form-label" for="longitude">Bujur (longitude)</label>
-                            <input class="form-control" type="text" id="longitude" name="longitude" inputmode="decimal"
-                                   value="<?= e((string) $form['longitude']) ?>" placeholder="109.7654321">
-                            <div class="form-text">Rentang -180 sampai 180.</div>
-                        </div>
-                    </div>
                 </div>
             </section>
 
