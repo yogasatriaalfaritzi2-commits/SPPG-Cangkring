@@ -14,13 +14,6 @@ $navbarUser = auth_user();
     <?php if ($navbarUser !== null): ?>
         <?php $unreadCount = \App\Models\Notification::unreadCount((int)$navbarUser['id']); ?>
         <div class="navbar-actions d-flex align-items-center gap-2">
-            <!-- Tombol Pintasan Command Palette (Ctrl+K) -->
-            <button class="btn btn-sm btn-outline-secondary d-none d-sm-inline-flex align-items-center gap-2 rounded-pill px-2 py-1 text-muted" type="button" data-command-palette-trigger title="Pencarian Cepat (Ctrl+K)">
-                <i class="bi bi-search" style="font-size: 0.8rem;"></i>
-                <span class="d-none d-lg-inline small">Cari fitur / menu...</span>
-                <kbd class="bg-light text-muted border px-1 small rounded">Ctrl+K</kbd>
-            </button>
-
             <a href="<?= url('/notifikasi') ?>" class="icon-btn position-relative" title="Notifikasi Sistem" aria-label="Notifikasi Sistem">
                 <i class="bi bi-bell fs-5" aria-hidden="true"></i>
                 <?php if ($unreadCount > 0): ?>

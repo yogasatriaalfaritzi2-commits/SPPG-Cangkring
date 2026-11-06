@@ -36,7 +36,6 @@ $documentTitle = ($title ?? 'Dashboard') . ' · ' . app_name();
 <div class="sidebar-backdrop" data-sidebar-close aria-hidden="true"></div>
 
 <?php require BASE_PATH . '/app/Views/partials/confirm_modal.php'; ?>
-<?php require BASE_PATH . '/app/Views/partials/command_palette.php'; ?>
 
 <script src="<?= asset('vendor/bootstrap/bootstrap.bundle.min.js') ?>"></script>
 <script src="<?= asset('js/app.js') ?>"></script>
