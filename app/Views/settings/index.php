@@ -119,66 +119,6 @@
     </div>
 
     <div class="col-12 col-xl-4">
-        <!-- Status Operasional Real-time & Kesehatan Sistem -->
-        <?php if (!empty($systemHealth)): ?>
-            <?php
-            $isHealthy = ($systemHealth['status'] ?? 'healthy') === 'healthy';
-            $db = $systemHealth['database'] ?? [];
-            $storage = $systemHealth['storage'] ?? [];
-            $runtime = $systemHealth['runtime'] ?? [];
-            ?>
-            <section class="app-card mb-3 border-<?= $isHealthy ? 'success' : 'warning' ?>">
-                <header class="card-head pb-2 border-bottom">
-                    <div>
-                        <div class="d-flex align-items-center gap-2 mb-1">
-                            <span class="badge <?= $isHealthy ? 'bg-success' : 'bg-warning text-dark' ?>">
-                                <i class="bi bi-circle-fill me-1" style="font-size: 0.6rem;"></i>
-                                <?= $isHealthy ? 'Sistem Prima (Healthy)' : 'Perhatian (Warning)' ?>
-                            </span>
-                        </div>
-                        <h2 class="card-title h6 mb-0">Status Operasional Real-time</h2>
-                    </div>
-                </header>
-                <dl class="info-list mb-0">
-                    <div>
-                        <dt>Status Basis Data</dt>
-                        <dd class="d-flex align-items-center gap-1">
-                            <span class="badge bg-success-subtle text-success border border-success-subtle">Online</span>
-                            <span class="small text-muted">(<?= e((string)($db['latency_ms'] ?? 0)) ?> ms)</span>
-                        </dd>
-                    </div>
-                    <div>
-                        <dt>Server MySQL / MariaDB</dt>
-                        <dd class="small"><?= e((string)($db['version'] ?? '—')) ?></dd>
-                    </div>
-                    <div>
-                        <dt>Tabel & Ukuran Data</dt>
-                        <dd class="fw-semibold">
-                            <?= (int)($db['tables'] ?? 0) ?> tabel
-                            <span class="small text-muted font-monospace">(<?= e((string)($db['size_mb'] ?? 0)) ?> MB)</span>
-                        </dd>
-                    </div>
-                    <div>
-                        <dt>Direktori Storage / Log</dt>
-                        <dd>
-                            <?php if (!empty($storage['storage_writable']) && !empty($storage['logs_writable'])): ?>
-                                <span class="text-success small fw-semibold"><i class="bi bi-check-circle me-1"></i>Writable</span>
-                            <?php else: ?>
-                                <span class="text-danger small fw-semibold"><i class="bi bi-x-circle me-1"></i>Izin Tulis Terbatas</span>
-                            <?php endif; ?>
-                        </dd>
-                    </div>
-                    <div>
-                        <dt>PHP Runtime & Memori</dt>
-                        <dd class="small">
-                            PHP v<?= e((string)($runtime['php_version'] ?? PHP_VERSION)) ?> · 
-                            <span class="fw-semibold"><?= e((string)($runtime['memory_usage_mb'] ?? 0)) ?> MB</span> / <?= e((string)($runtime['memory_limit'] ?? '128M')) ?>
-                        </dd>
-                    </div>
-                </dl>
-            </section>
-        <?php endif; ?>
-
         <aside class="app-card">
             <header class="card-head">
                 <div>
