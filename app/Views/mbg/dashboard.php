@@ -184,6 +184,13 @@
         <!-- Distribusi Status Menu -->
         <section class="app-card mb-3 p-3">
             <h2 class="h6 fw-bold mb-3"><i class="bi bi-pie-chart me-2"></i>Status Katalog Menu</h2>
+            <div class="mb-3" style="max-height: 200px; position: relative;">
+                <canvas class="chart-canvas" data-chart="menuStatusChart"
+                        data-chart-type="doughnut"
+                        data-chart-labels='["Disetujui", "Terjadwal", "Menunggu", "Draf"]'
+                        data-chart-values='[<?= (int)($menus['approved'] ?? 0) ?>, <?= (int)($menus['scheduled'] ?? 0) ?>, <?= (int)($menus['pending'] ?? 0) ?>, <?= (int)($menus['draft'] ?? 0) ?>]'
+                        aria-label="Status Katalog Menu" role="img"></canvas>
+            </div>
             <div class="d-flex justify-content-between mb-2 pb-1 border-bottom">
                 <span>Disetujui (Siap Masak)</span>
                 <span class="badge bg-success"><?= (int)($menus['approved'] ?? 0) ?></span>

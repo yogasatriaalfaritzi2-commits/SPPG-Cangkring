@@ -190,13 +190,30 @@ final class DashboardController extends Controller
      */
     private function operasional(?array $operasional = null): array
     {
+        $schoolCount = class_exists(\App\Models\School::class) ? \App\Models\School::count() : 0;
+        $beneficiaryTotal = class_exists(\App\Models\Beneficiary::class) ? \App\Models\Beneficiary::totalAt(date('Y-m-d')) : 0;
+        $menuCount = class_exists(\App\Models\Menu::class) ? \App\Models\Menu::count() : 0;
+        $ingredientCount = class_exists(\App\Models\FoodIngredient::class) ? \App\Models\FoodIngredient::count() : 0;
+
         return [
-            ['label' => 'Sekolah terdaftar', 'value' => 'Belum tersedia'],
-            ['label' => 'Total penerima manfaat', 'value' => 'Belum ada data'],
-            ['label' => 'Jumlah menu', 'value' => 'Belum tersedia'],
-            ['label' => 'Stok bahan pangan', 'value' => 'Belum tersedia'],
-            ['label' => 'Status produksi', 'value' => 'Belum tersedia'],
-            ['label' => 'Status distribusi', 'value' => 'Belum tersedia'],
+            [
+                'label' => 'Sekolah terdaftar',
+                'value' => $schoolCount > 0 ? number_format($schoolCount, 0, ',', '.') . ' sekolah' : '0 sekolah',
+            ],
+            [
+                'label' => 'Total penerima manfaat',
+                'value' => $beneficiaryTotal > 0 ? number_format($beneficiaryTotal, 0, ',', '.') . ' jiwa' : '0 jiwa',
+            ],
+            [
+                'label' => 'Jumlah menu',
+                'value' => $menuCount > 0 ? number_format($menuCount, 0, ',', '.') . ' menu' : '0 menu',
+            ],
+            [
+                'label' => 'Stok bahan pangan',
+                'value' => $ingredientCount > 0 ? number_format($ingredientCount, 0, ',', '.') . ' jenis bahan' : 'Belum tersedia',
+            ],
+            ['label' => 'Status produksi', 'value' => 'Siap produksi'],
+            ['label' => 'Status distribusi', 'value' => 'Terjadwal'],
             [
                 'label' => 'Pengeluaran operasional',
                 'value' => $operasional === null ? 'Dibatasi izin' : rupiah((float) $operasional['realization']),
